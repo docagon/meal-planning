@@ -24,13 +24,14 @@ header h1 span{opacity:.6;font-weight:300}
 .ct{background:var(--gl);color:var(--gn);font-family:'Outfit',sans-serif;font-size:.58rem;font-weight:600;padding:.06rem .35rem;border-radius:99px}
 
 .lib{background:var(--sf);border-right:1px solid var(--bd)}
+.lib-sticky{position:sticky;top:0;z-index:10;background:var(--sf);margin:-.7rem -.7rem 0;padding:.7rem .7rem .2rem;border-bottom:1px solid var(--bl)}
 .sb{width:100%;padding:.38rem .55rem;border:1px solid var(--bd);border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.76rem;background:var(--bg);color:var(--tx);outline:none;margin-bottom:.3rem}
 .sb:focus{border-color:var(--gn)}
 .tabs{display:flex;gap:0;margin-bottom:.35rem;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
 .tab{flex:1;padding:.3rem;text-align:center;font-size:.68rem;font-weight:600;background:var(--sf);color:var(--ts);border:none;cursor:pointer;font-family:'Outfit',sans-serif}
 .tab.on{background:var(--gn);color:#fff}
 .tab:not(:last-child){border-right:1px solid var(--bd)}
-.fr{display:flex;flex-wrap:wrap;gap:.18rem;margin-bottom:.35rem}
+.fr{display:flex;flex-wrap:wrap;gap:.18rem;margin-bottom:0}
 .ft{padding:.1rem .38rem;border-radius:99px;font-size:.6rem;font-weight:500;border:1px solid var(--bd);background:var(--sf);color:var(--ts);cursor:pointer;user-select:none}
 .ft:hover{border-color:var(--gn);color:var(--gn)}
 .ft.on{background:var(--gn);color:#fff;border-color:var(--gn)}
@@ -152,6 +153,8 @@ header h1 span{opacity:.6;font-weight:300}
   <div class="hb">
     <button class="hbtn" id="btn-sf">Smart Fill</button>
     <button class="hbtn" id="btn-add-recipe">Add Recipe</button>
+    <button class="hbtn" id="btn-copy-plan">Copy Plan</button>
+    <button class="hbtn" id="btn-paste-plan">Paste Plan</button>
     <button class="hbtn" id="btn-sauce">Sauces</button>
     <button class="hbtn" id="btn-print">Print</button>
     <button class="hbtn dng" id="btn-clear">Clear</button>
@@ -159,10 +162,12 @@ header h1 span{opacity:.6;font-weight:300}
 </header>
 <div class="app">
   <div class="pnl lib ap" id="p-lib">
-    <div class="tabs" id="tabs-container"></div>
-    <input type="text" class="sb" placeholder="Search meals or ingredients..." id="search">
-    <div class="fr" id="filters"></div>
-    <div id="mlist"></div>
+    <div class="lib-sticky">
+      <div class="tabs" id="tabs-container"></div>
+      <input type="text" class="sb" placeholder="Search meals or ingredients..." id="search">
+      <div class="fr" id="filters"></div>
+    </div>
+    <div id="mlist" style="padding-top:.35rem"></div>
   </div>
   <div class="pnl plan" id="p-plan">
     <div class="pt">This Week</div>
@@ -180,8 +185,8 @@ header h1 span{opacity:.6;font-weight:300}
 <div class="mo" id="recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-recipe-close">✕</button><button class="mfav" id="btn-r-fav" title="Favorite"></button><h2 id="r-name"></h2><div class="mds" id="r-desc"></div><div class="mch" id="r-chips"></div></div><div class="mb"><div class="msc"><h3>Ingredients</h3><div class="mig" id="r-ing"></div></div><div class="msc"><h3 id="r-meth">Instructions</h3><div class="mst" id="r-steps"></div></div><button class="mab" id="btn-r-add">+ Add to Plan</button></div></div></div>
 <div class="mo" id="sauce-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sauce-close">✕</button><h2>Sauces & Dressings</h2><div class="mds">Blueprint-friendly. All use olive oil — no seed oils.</div></div><div class="mb" id="sauce-list"></div></div></div>
 <div class="mo" id="sf-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sf-close">✕</button><h2>Smart Fill</h2><div class="mds">Auto-fill empty slots by style:</div></div><div class="mb"><div class="sf-opt" id="sf-opts"></div></div></div></div>
-<div class="mo" id="add-recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-ar-close">✕</button><h2>Add Recipe</h2><div class="mds">Paste a recipe URL and click Generate — or fill in the fields manually.</div></div><div class="mb">
-  <div class="ar-field"><label>Recipe URL</label><div class="ar-url-row"><input type="text" id="ar-url" class="ar-input" placeholder="https://..."><button id="btn-ar-fetch" class="ar-fetch-btn">Generate from URL</button></div></div>
+<div class="mo" id="paste-plan-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-pp-close">✕</button><h2>Paste Plan</h2><div class="mds">Paste a copied plan below and click Load — it will fill your week.</div></div><div class="mb"><div class="ar-field"><textarea id="pp-text" class="ar-input ar-ta" rows="12" placeholder="=== MEAL PLAN FOR THE WEEK ===&#10;&#10;Daily Smoothie: Classic Smoothie&#10;&#10;MON&#10;  Lunch:  Greek Chicken Salad&#10;  Dinner: Chicken Fajitas&#10;..."></textarea></div><button class="mab" id="btn-pp-load">Load Plan</button></div></div></div>
+<div class="mo" id="add-recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-ar-close">✕</button><h2>Add Recipe</h2><div class="mds">Fill in the fields below to add a new recipe.</div></div><div class="mb">
   <div class="ar-field"><label>Name *</label><input type="text" id="ar-name" class="ar-input" placeholder="Recipe name"></div>
   <div class="ar-row">
     <div class="ar-field"><label>Type</label><select id="ar-type" class="ar-input"><option value="smoothie">Smoothie</option><option value="lunch" selected>Lunch</option><option value="dinner">Dinner</option></select></div>
@@ -257,22 +262,22 @@ var LUNCHES=[
   steps:["Sear shrimp in 1 tsp olive oil, 2 min/side. Season with cumin. Cook corn in same pan 1 min.","Blend remaining olive oil, lime juice, cilantro, salt for dressing.","Arrange greens, tomatoes, corn, avocado. Top with shrimp, drizzle dressing."]},
 /* ── NEW: Bean & mushroom salads ── */
 {id:107,name:"Chickpea Mediterranean Salad",desc:"cucumber, tomato, feta, tahini",time:10,cal:400,pro:18,type:"lunch",ip:false,tags:["vegetarian","mediterranean"],
-  ing:[{n:"olive oil",a:1,u:"tsp",c:"pantry"},{n:"canned chickpeas",a:1,u:"can",c:"pantry"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"romaine lettuce",a:3,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"tahini",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"feta cheese",a:1,u:"oz",c:"dairy"}],
+  ing:[{n:"olive oil",a:1,u:"tsp",c:"pantry"},{n:"canned chickpeas",a:15,u:"oz",c:"pantry"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"romaine lettuce",a:3,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"tahini",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"feta cheese",a:1,u:"oz",c:"dairy"}],
   steps:["Drain chickpeas. Pan-fry in 1 tsp olive oil with cumin 5 min until crispy.","Chop romaine, dice cucumber and tomatoes, slice red onion.","Make tahini dressing: whisk tahini, lemon juice, 1 tbsp olive oil, splash of water.","Toss salad, top with crispy chickpeas and crumbled feta, drizzle tahini."]},
 {id:108,name:"White Bean & Arugula Salad",desc:"sun-dried tomato, lemon, olive oil",time:10,cal:380,pro:16,type:"lunch",ip:false,tags:["vegetarian","mediterranean"],
-  ing:[{n:"canned white beans",a:1,u:"can",c:"pantry"},{n:"arugula",a:3,u:"cups",c:"produce"},{n:"sun-dried tomatoes",a:0.25,u:"cup",c:"pantry"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  ing:[{n:"canned white beans",a:15,u:"oz",c:"pantry"},{n:"arugula",a:3,u:"cups",c:"produce"},{n:"sun-dried tomatoes",a:0.25,u:"cup",c:"pantry"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
   steps:["Drain and rinse white beans.","Arrange arugula. Top with beans, chopped sun-dried tomatoes, thinly sliced red onion.","Drizzle olive oil and squeeze lemon over everything. Season.","Shave parmesan on top. Ready in under 5 minutes."]},
 {id:109,name:"Black Bean & Corn Salad",desc:"avocado, cilantro lime, bell pepper",time:10,cal:420,pro:17,type:"lunch",ip:false,tags:["vegetarian","mexican"],
-  ing:[{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"frozen corn",a:0.5,u:"cup",c:"frozen"},{n:"bell peppers",a:1,u:"",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"lime",a:1,u:"",c:"produce"},{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"mixed greens",a:2,u:"cups",c:"produce"}],
+  ing:[{n:"canned black beans",a:15,u:"oz",c:"pantry"},{n:"frozen corn",a:0.5,u:"cup",c:"frozen"},{n:"bell peppers",a:1,u:"",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"lime",a:1,u:"",c:"produce"},{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"mixed greens",a:2,u:"cups",c:"produce"}],
   steps:["Drain and rinse black beans. Thaw corn (microwave 1 min or use fresh).","Dice bell pepper and tomatoes. Chop cilantro.","Make dressing: whisk olive oil, lime juice, cumin, salt.","Toss beans, corn, pepper, tomatoes on greens. Top with avocado, cilantro, dressing."]},
 {id:110,name:"Warm Mushroom & Lentil Salad",desc:"spinach, balsamic, walnuts, goat cheese",time:20,cal:440,pro:20,type:"lunch",ip:false,tags:["vegetarian","mediterranean"],
-  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"balsamic vinegar",a:1,u:"tbsp",c:"pantry"},{n:"canned lentils",a:1,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"walnuts",a:2,u:"tbsp",c:"pantry"},{n:"goat cheese",a:1,u:"oz",c:"dairy"}],
+  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"balsamic vinegar",a:1,u:"tbsp",c:"pantry"},{n:"canned lentils",a:15,u:"oz",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"walnuts",a:2,u:"tbsp",c:"pantry"},{n:"goat cheese",a:1,u:"oz",c:"dairy"}],
   steps:["Heat olive oil in skillet. Cook sliced mushrooms 4 min until golden. Add garlic 30 sec.","Add balsamic vinegar and drained lentils. Toss 1 min to warm through.","Arrange spinach on plates. Spoon warm mushroom-lentil mixture on top.","Scatter crushed walnuts and crumbled goat cheese."]},
 {id:111,name:"Mushroom & Edamame Asian Salad",desc:"cabbage, carrots, sesame ginger dressing",time:15,cal:370,pro:18,type:"lunch",ip:false,tags:["vegetarian","asian"],
   ing:[{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"soy sauce",a:0.5,u:"tbsp",c:"pantry"},{n:"frozen edamame",a:0.5,u:"cup",c:"frozen"},{n:"cabbage",a:2,u:"cups",c:"produce"},{n:"carrots",a:1,u:"",c:"produce"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"rice vinegar",a:1,u:"tbsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ginger",a:1,u:"tsp",c:"produce"},{n:"scallions",a:2,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
   steps:["Cook sliced mushrooms in sesame oil 4 min. Add 1/2 tbsp soy sauce, toss. Set aside to cool slightly.","Cook edamame per package. Shred cabbage, julienne carrots.","Make dressing: whisk 1 tbsp soy sauce, rice vinegar, olive oil, grated ginger.","Toss cabbage, carrots, edamame, mushrooms. Drizzle dressing, top with scallions, sesame seeds."]},
 {id:112,name:"Tuna & White Bean Salad",desc:"arugula, olive oil, lemon, capers",time:10,cal:410,pro:30,type:"lunch",ip:false,tags:["seafood","mediterranean"],
-  ing:[{n:"canned tuna (in water)",a:2,u:"cans",c:"pantry"},{n:"canned white beans",a:1,u:"can",c:"pantry"},{n:"arugula",a:3,u:"cups",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"capers",a:1,u:"tbsp",c:"pantry"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"}],
+  ing:[{n:"canned tuna (in water)",a:10,u:"oz",c:"pantry"},{n:"canned white beans",a:15,u:"oz",c:"pantry"},{n:"arugula",a:3,u:"cups",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"capers",a:1,u:"tbsp",c:"pantry"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"}],
   steps:["Drain tuna and beans. Flake tuna into chunks.","Arrange arugula. Top with beans, tuna, halved tomatoes, red onion, capers.","Drizzle generously with olive oil and lemon. Season.","No cooking required — ready in under 5 minutes."]},
 {id:113,name:"Thai Beef Salad",desc:"cucumber, mint, peanuts, chili lime",time:20,cal:430,pro:34,type:"lunch",ip:false,tags:["beef","thai"],
   ing:[{n:"sirloin steak",a:6,u:"oz",c:"protein"},{n:"lime",a:1,u:"",c:"produce"},{n:"fish sauce",a:1,u:"tbsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"chili flakes",a:0.5,u:"tsp",c:"pantry"},{n:"mixed greens",a:2,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"fresh mint",a:0.25,u:"cup",c:"produce"},{n:"peanuts",a:2,u:"tbsp",c:"pantry"}],
@@ -281,17 +286,17 @@ var LUNCHES=[
   ing:[{n:"quinoa",a:0.5,u:"cup",c:"grains"},{n:"eggs",a:2,u:"",c:"protein"},{n:"mixed greens",a:2,u:"cups",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"sunflower seeds",a:1,u:"tbsp",c:"pantry"}],
   steps:["Cook quinoa (or use leftover).","Soft-boil eggs: 7 min in boiling water, ice bath. Peel and halve.","Arrange greens, quinoa, halved tomatoes, sliced avocado.","Top with eggs. Drizzle olive oil and lemon. Scatter sunflower seeds."]},
 {id:115,name:"Cannellini Bean & Mushroom Salad",desc:"herbs, lemon, shaved parmesan, warm",time:15,cal:400,pro:18,type:"lunch",ip:false,tags:["vegetarian","italian"],
-  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"canned cannellini beans",a:1,u:"can",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"fresh herbs (parsley/thyme)",a:2,u:"tbsp",c:"produce"},{n:"arugula",a:2,u:"cups",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"canned cannellini beans",a:15,u:"oz",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"fresh herbs (parsley/thyme)",a:2,u:"tbsp",c:"produce"},{n:"arugula",a:2,u:"cups",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
   steps:["Heat olive oil. Cook sliced mushrooms 4 min until golden. Add minced garlic 30 sec.","Add drained cannellini beans. Toss 1-2 min to warm through.","Squeeze lemon juice over. Toss with chopped fresh herbs.","Serve warm over arugula. Shave parmesan on top."]},
 {id:116,name:"Black Bean & Mushroom Taco Salad",desc:"romaine, corn, avocado, cumin lime",time:15,cal:430,pro:19,type:"lunch",ip:false,tags:["vegetarian","mexican"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1,u:"cup",c:"produce"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"chili powder",a:0.5,u:"tsp",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"frozen corn",a:0.5,u:"cup",c:"frozen"},{n:"romaine lettuce",a:3,u:"cups",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"lime",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1,u:"cup",c:"produce"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"chili powder",a:0.5,u:"tsp",c:"pantry"},{n:"canned black beans",a:15,u:"oz",c:"pantry"},{n:"frozen corn",a:0.5,u:"cup",c:"frozen"},{n:"romaine lettuce",a:3,u:"cups",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"lime",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
   steps:["Heat olive oil. Cook sliced mushrooms with cumin and chili powder 4 min.","Add drained black beans and corn. Toss 2 min to warm through.","Chop romaine into a bowl. Top with mushroom-bean mixture.","Add sliced avocado, squeeze lime, scatter cilantro."]},
 ];
 
 /* ═══ DINNERS (ingredients ordered by step appearance) ═══ */
 var DINNERS=[
 {id:1,name:"Butter Chicken",desc:"tomato-cream sauce, rice, cilantro",time:30,cal:510,pro:38,type:"dinner",ip:true,tags:["chicken","indian"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garam masala",a:2,u:"tsp",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"coconut cream",a:0.5,u:"cup",c:"pantry"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garam masala",a:2,u:"tsp",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"coconut cream",a:0.5,u:"cup",c:"pantry"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
   steps:["Saut\u00e9: olive oil, diced onion 3 min. Add garlic, ginger 1 min.","Add garam masala, cumin, turmeric 30s. Add tomatoes and chicken chunks.","Seal, Pressure Cook HIGH 10 min. Cook rice on stove.","Quick Release. Stir in coconut cream. Serve over rice with cilantro."]},
 {id:2,name:"Chicken Fajitas",desc:"peppers, onions, lime, tortillas",time:25,cal:460,pro:36,type:"dinner",ip:true,tags:["chicken","mexican"],
   ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"lime",a:2,u:"",c:"produce"},{n:"corn tortillas",a:8,u:"",c:"grains"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
@@ -300,13 +305,13 @@ var DINNERS=[
   ing:[{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"broccoli",a:4,u:"cups",c:"produce"},{n:"scallions",a:3,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
   steps:["IP: chicken + soy sauce + sesame oil + garlic + ginger + 1/2 cup water. Seal, HIGH 8 min.","Cook rice. Steam broccoli 3 min. Quick Release. Slice chicken.","Saut\u00e9 to reduce sauce 2-3 min. Serve over rice with broccoli, scallions, sesame."]},
 {id:4,name:"Chicken Tikka Bowl",desc:"yogurt-spiced, rice, cauliflower",time:30,cal:480,pro:36,type:"dinner",ip:true,tags:["chicken","indian"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"canned tomatoes",a:0.5,u:"can",c:"pantry"},{n:"cauliflower",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"yogurt",a:0.5,u:"cup",c:"dairy"},{n:"spinach",a:2,u:"cups",c:"produce"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"canned tomatoes",a:7,u:"oz",c:"pantry"},{n:"cauliflower",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"yogurt",a:0.5,u:"cup",c:"dairy"},{n:"spinach",a:2,u:"cups",c:"produce"}],
   steps:["Saut\u00e9: olive oil, garlic, ginger, curry paste 1 min. Add cubed chicken, tomatoes, cauliflower.","Seal, HIGH 10 min. Cook rice. Quick Release.","Stir in yogurt and spinach until wilted. Serve over rice."]},
 {id:5,name:"Chicken Shawarma Bowl",desc:"quinoa, greens, tahini drizzle",time:25,cal:470,pro:36,type:"dinner",ip:true,tags:["chicken","middle-eastern"],
   ing:[{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:1,u:"",c:"produce"},{n:"quinoa",a:1,u:"cup",c:"grains"},{n:"mixed greens",a:3,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"tahini",a:2,u:"tbsp",c:"pantry"}],
   steps:["Rub chicken with cumin, turmeric, garlic, olive oil, lemon juice. IP with 1/4 cup water, HIGH 10 min.","Cook quinoa. Quick Release. Shred chicken.","Build bowls: quinoa, greens, chicken, diced cucumber. Drizzle tahini thinned with lemon + water."]},
 {id:6,name:"Chicken Tortilla Soup",desc:"tomato broth, black beans, avocado",time:25,cal:420,pro:34,type:"dinner",ip:true,tags:["chicken","mexican"],
-  ing:[{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1,u:"lb",c:"protein"},{n:"lime",a:1,u:"",c:"produce"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"corn tortillas",a:4,u:"",c:"grains"}],
+  ing:[{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"canned black beans",a:15,u:"oz",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1,u:"lb",c:"protein"},{n:"lime",a:1,u:"",c:"produce"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"corn tortillas",a:4,u:"",c:"grains"}],
   steps:["IP: onion, garlic, tomatoes, beans, spices, 2 cups water. Chicken on top. HIGH 10 min.","Quick Release. Shred chicken, return, add lime juice.","Serve topped with avocado, cilantro, toasted tortilla strips."]},
 {id:7,name:"Harissa Chicken & Farro",desc:"peppers, lemon, olive oil, spinach",time:30,cal:460,pro:34,type:"dinner",ip:true,tags:["chicken","middle-eastern"],
   ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"harissa paste",a:2,u:"tbsp",c:"pantry"},{n:"farro",a:1,u:"cup",c:"grains"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"lemon",a:1,u:"",c:"produce"}],
@@ -315,55 +320,55 @@ var DINNERS=[
   ing:[{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"TJ's Korean beef bulgogi",a:1,u:"pack",c:"protein"},{n:"frozen edamame",a:1,u:"cup",c:"frozen"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"eggs",a:2,u:"",c:"protein"},{n:"kimchi",a:0.5,u:"cup",c:"fermented"},{n:"shredded carrots",a:1,u:"cup",c:"produce"},{n:"gochujang",a:2,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"scallions",a:3,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
   steps:["IP rice: 1.75 cups water, HIGH 15 min, Natural Release 10 min.","Skillet: sear bulgogi 4-5 min. Microwave edamame. Wilt spinach in bulgogi pan.","Fry eggs sunny-side up. Build bowls: rice, bulgogi, kimchi, edamame, raw carrots, spinach.","Top with egg, gochujang, sesame oil, scallions, sesame seeds."]},
 {id:9,name:"Beef Stew",desc:"potatoes, carrots, herbs, rich broth",time:40,cal:480,pro:38,type:"dinner",ip:true,tags:["beef","american"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"beef stew meat",a:1.5,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"beef broth",a:2,u:"cups",c:"pantry"},{n:"canned tomatoes",a:0.5,u:"can",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"potatoes",a:3,u:"",c:"produce"},{n:"carrots",a:3,u:"",c:"produce"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"beef stew meat",a:1.5,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"beef broth",a:2,u:"cups",c:"pantry"},{n:"canned tomatoes",a:7,u:"oz",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"potatoes",a:3,u:"",c:"produce"},{n:"carrots",a:3,u:"",c:"produce"}],
   steps:["Saut\u00e9: sear beef in olive oil. Add onion, garlic.","Add broth, tomatoes, thyme. Deglaze. Add cubed potatoes and carrots.","Seal, HIGH 20 min. Natural Release 10 min. Season and serve."]},
 {id:10,name:"Shepherd's Pie",desc:"beef filling, mashed potato top",time:40,cal:500,pro:36,type:"dinner",ip:true,tags:["beef","american"],
   ing:[{n:"potatoes",a:4,u:"",c:"produce"},{n:"butter",a:2,u:"tbsp",c:"dairy"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground beef (lean)",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"tomato paste",a:2,u:"tbsp",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"beef broth",a:0.5,u:"cup",c:"pantry"},{n:"frozen peas",a:1,u:"cup",c:"frozen"}],
   steps:["IP: potato chunks on trivet, 1 cup water, HIGH 8 min. QR. Mash with butter.","Brown beef with onion, carrots in olive oil 5 min. Add garlic, tomato paste, thyme, broth, peas.","Transfer to oven dish, spread mash on top. Broil 5 min until golden."]},
 {id:11,name:"Pork Carnitas",desc:"black beans, rice, lime, cilantro",time:45,cal:500,pro:38,type:"dinner",ip:true,tags:["pork","mexican"],
-  ing:[{n:"pork shoulder",a:2,u:"lb",c:"protein"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"lime",a:2,u:"",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  ing:[{n:"pork shoulder",a:2,u:"lb",c:"protein"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"lime",a:2,u:"",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"canned black beans",a:15,u:"oz",c:"pantry"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
   steps:["Season pork with cumin, chili powder. Sear in olive oil. Add onion, garlic, lime juice, 1/2 cup water.","Seal, HIGH 25 min. NR 10 min. Shred. Optional: broil 3 min for crispy edges.","Serve over rice with beans, cilantro, lime."]},
 {id:12,name:"Pork Ramen",desc:"miso broth, bok choy, soft egg",time:30,cal:490,pro:36,type:"dinner",ip:true,tags:["pork","japanese"],
   ing:[{n:"pork tenderloin",a:1,u:"lb",c:"protein"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"miso paste",a:2,u:"tbsp",c:"pantry"},{n:"ramen noodles",a:2,u:"packs",c:"grains"},{n:"bok choy",a:2,u:"cups",c:"produce"},{n:"eggs",a:2,u:"",c:"protein"},{n:"scallions",a:4,u:"",c:"produce"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"}],
   steps:["IP: pork + soy + ginger + garlic + 4 cups water. HIGH 15 min. QR.","Slice pork, strain broth. Saut\u00e9: dissolve miso in broth. Add noodles 3 min, bok choy last min.","Soft-boil eggs 6.5 min, ice bath. Build bowls: noodles/broth, pork, egg, scallions, sesame oil."]},
 {id:13,name:"Turkey Bolognese",desc:"whole wheat pasta, side salad",time:25,cal:460,pro:34,type:"dinner",ip:true,tags:["turkey","italian"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"dried oregano",a:1,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"whole wheat pasta",a:8,u:"oz",c:"grains"},{n:"mixed greens",a:2,u:"cups",c:"produce"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"dried oregano",a:1,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"whole wheat pasta",a:8,u:"oz",c:"grains"},{n:"mixed greens",a:2,u:"cups",c:"produce"}],
   steps:["Saut\u00e9: brown turkey with onion, carrots in olive oil 5 min. Garlic, oregano 1 min.","Add tomatoes, pasta, 1.5 cups water. Seal, HIGH 5 min. QR. Stir.","Serve with side salad of greens with olive oil and lemon."]},
 {id:14,name:"Turkey Chili",desc:"black beans, peppers, avocado",time:30,cal:440,pro:36,type:"dinner",ip:true,tags:["turkey","mexican"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tbsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"avocado",a:1,u:"",c:"produce"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tbsp",c:"pantry"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"canned black beans",a:15,u:"oz",c:"pantry"},{n:"avocado",a:1,u:"",c:"produce"}],
   steps:["Saut\u00e9: brown turkey in olive oil 4 min. Add onion, peppers, garlic 2 min.","Add cumin, chili powder, tomatoes, drained beans, 1 cup water. Seal, HIGH 10 min. NR 5 min.","Serve topped with avocado."]},
 {id:15,name:"Minestrone Soup",desc:"beans, pasta, vegetables, tomato broth",time:25,cal:380,pro:16,type:"dinner",ip:true,tags:["vegetarian","italian"],
-  ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"celery",a:2,u:"stalks",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"dried oregano",a:1,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"canned white beans",a:1,u:"can",c:"pantry"},{n:"zucchini",a:1,u:"",c:"produce"},{n:"whole wheat pasta (small)",a:4,u:"oz",c:"grains"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"celery",a:2,u:"stalks",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"dried oregano",a:1,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"canned white beans",a:15,u:"oz",c:"pantry"},{n:"zucchini",a:1,u:"",c:"produce"},{n:"whole wheat pasta (small)",a:4,u:"oz",c:"grains"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
   steps:["Saut\u00e9: olive oil, onion, carrots, celery 3 min. Garlic, oregano.","Add tomatoes, beans, zucchini, pasta, 4 cups water. Seal, HIGH 4 min. QR.","Stir in spinach. Serve with olive oil drizzle and parmesan."]},
 {id:16,name:"Hungarian Mushroom Soup",desc:"paprika, dill, sour cream, earthy",time:30,cal:350,pro:12,type:"dinner",ip:true,tags:["vegetarian","european"],
   ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"mixed mushrooms",a:1.5,u:"lb",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"sweet paprika",a:2,u:"tbsp",c:"pantry"},{n:"dried dill",a:1,u:"tsp",c:"pantry"},{n:"vegetable broth",a:3,u:"cups",c:"pantry"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"sour cream",a:0.5,u:"cup",c:"dairy"},{n:"lemon",a:0.5,u:"",c:"produce"}],
   steps:["Saut\u00e9: onion in olive oil 3 min. Add mushrooms 5 min. Garlic, paprika, dill 1 min.","Add broth, soy sauce. Seal, HIGH 5 min. QR.","Stir in sour cream and lemon juice (don't boil after). Serve with sourdough."]},
 {id:17,name:"Thai Coconut Mushroom Soup",desc:"coconut, lime, basil, ginger",time:25,cal:320,pro:10,type:"dinner",ip:true,tags:["vegetarian","thai"],
-  ing:[{n:"mixed mushrooms",a:1,u:"lb",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"red curry paste",a:1,u:"tbsp",c:"pantry"},{n:"vegetable broth",a:2,u:"cups",c:"pantry"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"lime",a:1,u:"",c:"produce"},{n:"fresh basil",a:0.5,u:"cup",c:"produce"},{n:"scallions",a:3,u:"",c:"produce"}],
+  ing:[{n:"mixed mushrooms",a:1,u:"lb",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"red curry paste",a:1,u:"tbsp",c:"pantry"},{n:"vegetable broth",a:2,u:"cups",c:"pantry"},{n:"coconut milk",a:13.5,u:"oz",c:"pantry"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"lime",a:1,u:"",c:"produce"},{n:"fresh basil",a:0.5,u:"cup",c:"produce"},{n:"scallions",a:3,u:"",c:"produce"}],
   steps:["Saut\u00e9 mushrooms dry 3 min. Add ginger, garlic, curry paste. Add broth + coconut milk.","Seal, HIGH 5 min. QR. Add soy sauce, lime juice.","Serve topped with torn basil and scallions."]},
 {id:18,name:"Lentil Soup",desc:"carrots, cumin, lemon, warming",time:30,cal:390,pro:22,type:"dinner",ip:true,tags:["vegetarian","middle-eastern"],
   ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:3,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"red lentils",a:1.5,u:"cups",c:"grains"},{n:"vegetable broth",a:4,u:"cups",c:"pantry"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"lemon",a:1,u:"",c:"produce"}],
   steps:["Saut\u00e9: onion, carrots in olive oil 3 min. Garlic, cumin, turmeric 1 min.","Add lentils + broth. Seal, HIGH 10 min. NR 5 min.","Stir in spinach, squeeze lemon. Partially blend for creamy texture. Drizzle olive oil."]},
 {id:19,name:"Chickpea Coconut Curry",desc:"spinach, over rice",time:25,cal:450,pro:18,type:"dinner",ip:true,tags:["vegetarian","indian"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"canned chickpeas",a:2,u:"cans",c:"pantry"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"canned tomatoes",a:0.5,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"canned chickpeas",a:30,u:"oz",c:"pantry"},{n:"coconut milk",a:13.5,u:"oz",c:"pantry"},{n:"canned tomatoes",a:7,u:"oz",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
   steps:["Saut\u00e9: onion in olive oil 3 min. Garlic, ginger, curry paste 1 min.","Add chickpeas, coconut milk, tomatoes. Seal, HIGH 5 min. QR. Stir in spinach.","Cook rice on stove. Serve curry over rice."]},
 {id:20,name:"Lentil Dal",desc:"coconut milk, spinach, warm spices",time:25,cal:430,pro:20,type:"dinner",ip:true,tags:["vegetarian","indian"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:1,u:"tbsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"red lentils",a:1.5,u:"cups",c:"grains"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:1,u:"tbsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"red lentils",a:1.5,u:"cups",c:"grains"},{n:"coconut milk",a:13.5,u:"oz",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
   steps:["Saut\u00e9: onion in olive oil 3 min. Garlic, ginger, curry paste, turmeric.","Add lentils + 3 cups water. Seal, HIGH 8 min. NR 5 min.","Stir in coconut milk, spinach, lemon. Serve over rice."]},
 {id:21,name:"Lentil Sweet Potato Curry",desc:"coconut, spinach, warming",time:30,cal:440,pro:18,type:"dinner",ip:true,tags:["vegetarian","indian"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"red lentils",a:1,u:"cup",c:"grains"},{n:"sweet potato",a:2,u:"",c:"produce"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"red lentils",a:1,u:"cup",c:"grains"},{n:"sweet potato",a:2,u:"",c:"produce"},{n:"coconut milk",a:13.5,u:"oz",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
   steps:["Saut\u00e9: onion in olive oil 3 min. Garlic, ginger, curry paste.","Add lentils, cubed sweet potato, coconut milk, 1 cup water. Seal, HIGH 10 min. QR.","Stir in spinach. Serve over rice."]},
-{id:22,name:"Black Bean Soup",desc:"cumin, lime, avocado, cilantro",time:40,cal:400,pro:20,type:"dinner",ip:true,tags:["vegetarian","mexican"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"dried black beans",a:1.5,u:"cups",c:"pantry"},{n:"vegetable broth",a:4,u:"cups",c:"pantry"},{n:"lime",a:1,u:"",c:"produce"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
-  steps:["Saut\u00e9 onion in olive oil 3 min. Garlic, cumin, chili powder. Add beans + broth.","Seal, HIGH 25 min. NR 15 min. Partially blend. Add lime.","Serve with avocado and cilantro."]},
+{id:22,name:"Black Bean Soup",desc:"cumin, lime, avocado, cilantro",time:20,cal:400,pro:20,type:"dinner",ip:true,tags:["vegetarian","mexican"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"canned black beans",a:30,u:"oz",c:"pantry"},{n:"vegetable broth",a:2,u:"cups",c:"pantry"},{n:"lime",a:1,u:"",c:"produce"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  steps:["Saut\u00e9 onion in olive oil 3 min. Add garlic, cumin, chili powder 1 min.","Add drained canned beans + broth. Seal, HIGH 8 min. QR. Partially blend. Add lime.","Serve with avocado and cilantro."]},
 {id:23,name:"Mushroom Risotto",desc:"parmesan, arugula, olive oil",time:25,cal:420,pro:16,type:"dinner",ip:true,tags:["vegetarian","italian"],
   ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1,u:"lb",c:"produce"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"arborio rice",a:1.5,u:"cups",c:"grains"},{n:"vegetable broth",a:3.5,u:"cups",c:"pantry"},{n:"parmesan",a:2,u:"oz",c:"dairy"},{n:"arugula",a:2,u:"cups",c:"produce"}],
   steps:["Saut\u00e9 mushrooms in olive oil 4 min (reserve half). Add onion, garlic, thyme. Toast rice 1 min.","Add broth. Seal, HIGH 6 min. QR. Stir vigorously.","Add parmesan + reserved mushrooms. Top with arugula + olive oil drizzle."]},
 {id:24,name:"Cabbage Stew",desc:"turkey, potatoes, carrots, tomato broth",time:30,cal:400,pro:28,type:"dinner",ip:true,tags:["turkey","european"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"sweet paprika",a:1,u:"tsp",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"potatoes",a:3,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"cabbage",a:0.5,u:"head",c:"produce"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"vegetable broth",a:2,u:"cups",c:"pantry"}],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"sweet paprika",a:1,u:"tsp",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"potatoes",a:3,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"cabbage",a:0.5,u:"head",c:"produce"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"vegetable broth",a:2,u:"cups",c:"pantry"}],
   steps:["Saut\u00e9: brown turkey in olive oil with paprika + thyme 4 min. Add onion, garlic.","Add potatoes, carrots, cabbage, tomatoes, broth. Push cabbage under liquid.","Seal, HIGH 8 min. QR. Season. Even better the next day."]},
 {id:25,name:"Turkey Sweet Potato Bowl",desc:"black beans, avocado, lime",time:25,cal:490,pro:34,type:"dinner",ip:true,tags:["turkey","mexican"],
-  ing:[{n:"sweet potato",a:2,u:"",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"avocado",a:1,u:"",c:"produce"},{n:"lime",a:1,u:"",c:"produce"}],
+  ing:[{n:"sweet potato",a:2,u:"",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"canned black beans",a:15,u:"oz",c:"pantry"},{n:"avocado",a:1,u:"",c:"produce"},{n:"lime",a:1,u:"",c:"produce"}],
   steps:["IP: cubed sweet potatoes on trivet, 1 cup water, HIGH 5 min. QR.","Saut\u00e9: brown turkey with garlic + cumin in olive oil 5 min. Add beans + sweet potato.","Serve with avocado + lime."]},
 /* Non-IP */
 {id:30,name:"Teriyaki Salmon Bowl",desc:"rice, bok choy, ginger, sesame",time:20,cal:490,pro:34,type:"dinner",ip:false,tags:["seafood","japanese"],
@@ -382,7 +387,7 @@ var DINNERS=[
   ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"shrimp",a:1,u:"lb",c:"protein"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"cabbage",a:2,u:"cups",c:"produce"},{n:"lime",a:2,u:"",c:"produce"},{n:"corn tortillas",a:8,u:"",c:"grains"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
   steps:["Sear shrimp in olive oil with cumin 2 min/side. Make cabbage slaw with lime + salt.","Warm tortillas. Build tacos: shrimp, slaw, avocado, cilantro, lime."]},
 {id:36,name:"Japanese Curry",desc:"chicken thighs, onions, potatoes, carrots, curry roux",time:40,cal:320,pro:26,type:"dinner",ip:true,tags:["chicken","japanese"],
-  ing:[{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"onions",a:3,u:"",c:"produce"},{n:"carrots",a:1.5,u:"",c:"produce"},{n:"Yukon gold potatoes",a:3,u:"",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tsp",c:"produce"},{n:"neutral oil",a:1,u:"tbsp",c:"pantry"},{n:"chicken broth",a:3,u:"cups",c:"pantry"},{n:"Japanese curry roux",a:1,u:"pack",c:"pantry"},{n:"ketchup",a:1,u:"tbsp",c:"pantry"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"short-grain rice",a:2,u:"cups",c:"grains"}],
+  ing:[{n:"neutral oil",a:1,u:"tbsp",c:"pantry"},{n:"onions",a:3,u:"",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tsp",c:"produce"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"carrots",a:1.5,u:"",c:"produce"},{n:"Yukon gold potatoes",a:3,u:"",c:"produce"},{n:"chicken broth",a:3,u:"cups",c:"pantry"},{n:"Japanese curry roux",a:1,u:"pack",c:"pantry"},{n:"ketchup",a:1,u:"tbsp",c:"pantry"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"short-grain rice",a:2,u:"cups",c:"grains"}],
   steps:["Cut onions into wedges. Chop carrots and potatoes bite-sized (soak potatoes 15 min). Mince garlic, grate ginger. Cut chicken into chunks, season with salt & pepper.","Press Sauté on IP. Heat oil, add onion, garlic, ginger. Add chicken and mix until coated. Add carrots and potatoes.","Pour in 3 cups broth. Place curry roux blocks on top — do NOT stir. Lock lid, seal valve, cook on Meat/Stew HIGH 15 min.","Quick release or natural release (~15 min). Stir until roux fully dissolves. Add ketchup and soy sauce. Adjust salt to taste.","Serve over steamed short-grain rice."]},
 {id:35,name:"Korean Beef Bowl",desc:"rice, kimchi, egg, gochujang",time:20,cal:520,pro:36,type:"dinner",ip:false,tags:["beef","korean"],
   ing:[{n:"brown rice",a:1.5,u:"cups cooked",c:"grains"},{n:"ground beef (lean)",a:1,u:"lb",c:"protein"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"eggs",a:2,u:"",c:"protein"},{n:"kimchi",a:0.5,u:"cup",c:"fermented"},{n:"scallions",a:3,u:"",c:"produce"},{n:"gochujang",a:1,u:"tbsp",c:"pantry"}],
@@ -606,7 +611,7 @@ function fetchRecipe(){
   }).catch(function(){alert('Could not fetch the URL. Check the link and try again.');btn.textContent='Generate from URL';btn.disabled=false;});
 }
 function showAddRecipe(){
-  $('ar-name').value='';$('ar-url').value='';$('ar-desc').value='';
+  $('ar-name').value='';$('ar-desc').value='';
   $('ar-ing').value='';$('ar-steps').value='';
   $('ar-time').value=15;$('ar-cal').value=400;$('ar-pro').value=20;
   $('add-recipe-modal').classList.add('show');
@@ -619,12 +624,11 @@ function saveCustomRecipe(){
   var cal=parseInt($('ar-cal').value)||400;
   var pro=parseInt($('ar-pro').value)||20;
   var desc=$('ar-desc').value.trim();
-  var url=$('ar-url').value.trim();
   var ing=parseIngredients($('ar-ing').value);
   var steps=$('ar-steps').value.split('\n').map(function(l){return l.trim();}).filter(Boolean);
   var maxId=0;ALL.forEach(function(m){if(m.id>maxId)maxId=m.id;});
   var recipe={id:maxId+1,name:name,desc:desc||ing.map(function(i){return i.n;}).slice(0,4).join(', '),
-    time:time,cal:cal,pro:pro,type:type,ip:false,tags:[type],url:url,ing:ing,steps:steps};
+    time:time,cal:cal,pro:pro,type:type,ip:false,tags:[type],ing:ing,steps:steps};
   ALL.push(recipe);
   if(type==='smoothie')SMOOTHIES.push(recipe);
   else if(type==='lunch')LUNCHES.push(recipe);
@@ -633,6 +637,59 @@ function saveCustomRecipe(){
   $('add-recipe-modal').classList.remove('show');
   curTab=type;renderTabs();renderF();renderLib();
   if(type==='smoothie')renderSmoothie();
+}
+
+// ── Paste Plan ──
+function pastePlan(){
+  var text=$('pp-text').value.trim();
+  if(!text){alert('Paste a plan first.');return;}
+  var lines=text.split('\n');
+  var curDay=null;
+  var matched=0;
+  var notFound=[];
+  // helper: find meal by name (case-insensitive)
+  function findByName(name){name=name.trim().toLowerCase();for(var i=0;i<ALL.length;i++){if(ALL[i].name.toLowerCase()===name)return ALL[i];}return null;}
+  lines.forEach(function(line){
+    line=line.trim();
+    // Daily Smoothie
+    var smMatch=line.match(/^Daily Smoothie:\s*(.+)$/i);
+    if(smMatch){var sm=findByName(smMatch[1]);if(sm){selSmoothie=sm.id;}return;}
+    // Day header (MON, TUE, etc.)
+    if(/^(MON|TUE|WED|THU|FRI|SAT|SUN)$/i.test(line)){curDay=DAYS.filter(function(d){return d.toUpperCase()===line.toUpperCase();})[0]||null;return;}
+    // Lunch / Dinner line
+    var lMatch=line.match(/^Lunch:\s*(.+)$/i);
+    var dMatch=line.match(/^Dinner:\s*(.+)$/i);
+    if(curDay&&lMatch){var m=findByName(lMatch[1]);if(m){plan[curDay].lunch=m.id;matched++;}else{notFound.push(lMatch[1]);}return;}
+    if(curDay&&dMatch){var m=findByName(dMatch[1]);if(m){plan[curDay].dinner=m.id;matched++;}else{notFound.push(dMatch[1]);}return;}
+  });
+  if(matched===0&&notFound.length===0){alert('No meals found in the pasted text. Make sure it was copied using the Copy Plan button.');return;}
+  checks={};save();renderSmoothie();renderPlan();renderGroc();
+  $('paste-plan-modal').classList.remove('show');
+  $('pp-text').value='';
+  if(notFound.length){alert('Loaded '+matched+' meal(s). Could not find: '+notFound.join(', '));}
+}
+
+// ── Copy Plan ──
+function copyPlan(){
+  var lines=[];
+  var smoothie=selSmoothie?findMeal(selSmoothie):null;
+  lines.push('=== MEAL PLAN FOR THE WEEK ===');
+  if(smoothie)lines.push('\nDaily Smoothie: '+smoothie.name);
+  lines.push('');
+  DAYS.forEach(function(day){
+    var lm=plan[day].lunch?findMeal(plan[day].lunch):null;
+    var dm=plan[day].dinner?findMeal(plan[day].dinner):null;
+    if(!lm&&!dm)return;
+    lines.push(day);
+    if(lm)lines.push('  Lunch:  '+lm.name);
+    if(dm)lines.push('  Dinner: '+dm.name);
+  });
+  if(lines.length<=3){lines.push('(No meals planned yet)');}
+  var text=lines.join('\n');
+  function flash(){var btn=$('btn-copy-plan');var orig=btn.textContent;btn.textContent='Copied!';setTimeout(function(){btn.textContent=orig;},1800);}
+  function fallback(){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-9999px;left:-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');flash();}catch(e){}document.body.removeChild(ta);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(flash).catch(fallback);}
+  else{fallback();}
 }
 
 // ── Header button events ──
@@ -652,9 +709,13 @@ $('btn-print').addEventListener('click',function(){
 $('btn-sf').addEventListener('click',function(){showSF();});
 $('btn-add-recipe').addEventListener('click',function(){showAddRecipe();});
 $('btn-ar-close').addEventListener('click',function(){$('add-recipe-modal').classList.remove('show');});
-$('btn-ar-fetch').addEventListener('click',function(){fetchRecipe();});
 $('btn-ar-save').addEventListener('click',function(){saveCustomRecipe();});
+$('btn-paste-plan').addEventListener('click',function(){$('pp-text').value='';$('paste-plan-modal').classList.add('show');});
+$('btn-pp-close').addEventListener('click',function(){$('paste-plan-modal').classList.remove('show');});
+$('paste-plan-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
+$('btn-pp-load').addEventListener('click',function(){pastePlan();});
 $('add-recipe-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
+$('btn-copy-plan').addEventListener('click',function(){copyPlan();});
 $('btn-sauce').addEventListener('click',function(){showSauces();});
 $('btn-recipe-close').addEventListener('click',function(){closeModal();});
 $('btn-r-fav').addEventListener('click',function(){if(!modalId)return;if(favorites[modalId])delete favorites[modalId];else favorites[modalId]=true;saveFavs();this.className='mfav'+(favorites[modalId]?' faved':'');renderLib();});
