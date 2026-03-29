@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meal Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#FAF7F2;--sf:#FFF;--sa:#F3EEE6;--bd:#E5DFD5;--bl:#EDE8E0;--tx:#2C2416;--ts:#7A6F60;--tm:#A89E8E;--gn:#4A7C59;--gl:#E8F0EB;--gd:#3A6347;--am:#C4882F;--al:#FDF3E4;--rd:#C25B4A;--bll:#E3ECF6;--bt:#3B6BA5;--ppl:#F3E8F9;--pt:#8B5BA5;--r:10px;--rs:6px}
+html{font-size:14.5px}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.5}
+header{background:var(--gd);color:#fff;padding:.55rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.15);flex-wrap:wrap;gap:.35rem}
+header h1{font-family:'Fraunces',serif;font-weight:500;font-size:1.15rem}
+header h1 span{opacity:.6;font-weight:300}
+.hb{display:flex;gap:.3rem;flex-wrap:wrap}
+.hbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;padding:.28rem .55rem;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.68rem;font-weight:500;cursor:pointer;white-space:nowrap}
+.hbtn:hover{background:rgba(255,255,255,.25)}
+.hbtn.dng{background:rgba(194,91,74,.4);border-color:rgba(194,91,74,.5)}
+.hbtn.dng:hover{background:rgba(194,91,74,.6)}
+
+.app{display:grid;grid-template-columns:270px 1fr 260px;gap:0;height:calc(100vh - 46px)}
+.pnl{overflow-y:auto;padding:.7rem}
+.pt{font-family:'Fraunces',serif;font-weight:500;font-size:.92rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.35rem}
+.ct{background:var(--gl);color:var(--gn);font-family:'Outfit',sans-serif;font-size:.58rem;font-weight:600;padding:.06rem .35rem;border-radius:99px}
+
+.lib{background:var(--sf);border-right:1px solid var(--bd)}
+.sb{width:100%;padding:.38rem .55rem;border:1px solid var(--bd);border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.76rem;background:var(--bg);color:var(--tx);outline:none;margin-bottom:.3rem}
+.sb:focus{border-color:var(--gn)}
+.tabs{display:flex;gap:0;margin-bottom:.35rem;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.tab{flex:1;padding:.3rem;text-align:center;font-size:.68rem;font-weight:600;background:var(--sf);color:var(--ts);border:none;cursor:pointer;font-family:'Outfit',sans-serif}
+.tab.on{background:var(--gn);color:#fff}
+.tab:not(:last-child){border-right:1px solid var(--bd)}
+.fr{display:flex;flex-wrap:wrap;gap:.18rem;margin-bottom:.35rem}
+.ft{padding:.1rem .38rem;border-radius:99px;font-size:.6rem;font-weight:500;border:1px solid var(--bd);background:var(--sf);color:var(--ts);cursor:pointer;user-select:none}
+.ft:hover{border-color:var(--gn);color:var(--gn)}
+.ft.on{background:var(--gn);color:#fff;border-color:var(--gn)}
+.ft.ip{background:var(--am);color:#fff;border-color:var(--am)}
+
+.mc{background:var(--bg);border:1px solid var(--bl);border-radius:var(--rs);padding:.42rem .52rem;margin-bottom:.22rem;cursor:pointer;transition:all .12s}
+.mc:hover{border-color:var(--gn);box-shadow:0 1px 2px rgba(44,36,22,.06);transform:translateY(-1px)}
+.mc.sel{border-color:var(--gn);background:var(--gl);box-shadow:0 0 0 2px var(--gn)}
+.mn{font-weight:500;font-size:.72rem;line-height:1.2}
+.md{font-size:.62rem;color:var(--ts);margin-bottom:.18rem}
+.mm{display:flex;align-items:center;gap:.18rem;font-size:.57rem;flex-wrap:wrap}
+.ch{padding:.03rem .28rem;border-radius:99px;font-weight:500}
+.c-t{background:var(--bll);color:var(--bt)}.c-c{background:var(--al);color:var(--am)}.c-p{background:var(--gl);color:var(--gn)}.c-ip{background:var(--ppl);color:var(--pt)}.c-sk{background:var(--sa);color:var(--ts)}
+.rb{margin-left:auto;background:none;border:1px solid var(--bd);border-radius:var(--rs);padding:.08rem .3rem;font-size:.56rem;font-family:'Outfit',sans-serif;color:var(--ts);cursor:pointer}
+.rb:hover{border-color:var(--gn);color:var(--gn)}
+
+/* ── PLANNER: vertical day rows ── */
+.plan{background:var(--bg);padding:.6rem .7rem}
+.smoothie-bar{background:var(--al);border:1px solid #E8D9B8;border-radius:var(--rs);padding:.4rem .6rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.smoothie-bar label{font-weight:600;font-size:.7rem;color:var(--am);white-space:nowrap}
+.smoothie-bar select{font-family:'Outfit',sans-serif;font-size:.7rem;padding:.22rem .35rem;border:1px solid #E0D0A8;border-radius:var(--rs);background:var(--sf);color:var(--tx);min-width:110px}
+.smoothie-bar .sb-add{font-size:.63rem;color:var(--ts);display:flex;align-items:center;gap:.25rem}
+.smoothie-bar .sb-add input{accent-color:var(--am);width:12px;height:12px}
+.sm-rb{background:none;border:1px solid #E0D0A8;border-radius:var(--rs);padding:.12rem .3rem;font-size:.58rem;font-family:'Outfit',sans-serif;color:var(--am);cursor:pointer}
+
+.day-row{display:grid;grid-template-columns:58px 1fr 1fr;gap:.35rem;margin-bottom:.35rem;align-items:stretch}
+.day-label{background:var(--sa);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ts);border:1px solid var(--bl)}
+.day-label.tdy{color:var(--gn);background:var(--gl);border-color:var(--gn)}
+.slot{min-height:52px;background:var(--sf);border:1px solid var(--bl);border-radius:var(--rs);padding:.3rem;cursor:pointer;transition:background .12s}
+.slot.tt{background:var(--gl);animation:pulse 1s ease infinite alternate}
+@keyframes pulse{from{background:var(--gl)}to{background:#D4E8DA}}
+.slot.drag-over{background:var(--gl)}
+.slot-lbl{font-size:.48rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--tm);margin-bottom:.1rem}
+.slot-empty{display:flex;align-items:center;justify-content:center;height:28px;border:1px dashed var(--bd);border-radius:var(--rs);color:var(--tm);font-size:.6rem;opacity:.5}
+.slot-meal{border-radius:var(--rs);padding:.2rem .35rem;font-size:.62rem;font-weight:500;position:relative;line-height:1.2;cursor:pointer}
+.slot-meal.dinner{background:var(--gl);border:1px solid #C1D9C8;color:var(--gd)}
+.slot-meal.lunch{background:var(--al);border:1px solid #E0D0A8;color:#8B6B1A}
+.slot-meal .rm{position:absolute;top:0;right:2px;background:none;border:none;color:var(--rd);cursor:pointer;font-size:.76rem;line-height:1;opacity:0;transition:opacity .12s}
+.slot-meal:hover .rm{opacity:1}
+
+/* Grocery */
+.groc{background:var(--sf);border-left:1px solid var(--bd)}
+.gs{background:var(--sa);border-radius:var(--rs);padding:.35rem;margin-bottom:.35rem;font-size:.66rem;color:var(--ts);display:flex;justify-content:space-between}
+.shop-toggle{display:flex;gap:0;margin-bottom:.4rem;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden}
+.shop-btn{flex:1;padding:.25rem;text-align:center;font-size:.6rem;font-weight:600;background:var(--sf);color:var(--ts);border:none;cursor:pointer;font-family:'Outfit',sans-serif}
+.shop-btn.on{background:var(--gn);color:#fff}
+.shop-btn:not(:last-child){border-right:1px solid var(--bd)}
+.shop-hdr{font-weight:600;font-size:.7rem;color:var(--gn);padding:.25rem .4rem;background:var(--gl);border-radius:var(--rs);margin:.4rem 0 .3rem}
+.gc{margin-bottom:.35rem}
+.gch{font-weight:600;font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ts);padding-bottom:.15rem;border-bottom:1px solid var(--bl);margin-bottom:.15rem}
+.gi{display:flex;align-items:center;gap:.35rem;padding:.1rem 0;font-size:.7rem}
+.gi input[type="checkbox"]{accent-color:var(--gn);width:12px;height:12px;cursor:pointer}
+.gi.ck{text-decoration:line-through;opacity:.3}
+.gi .at{color:var(--tm);font-size:.64rem;margin-left:auto;white-space:nowrap}
+.ge{text-align:center;color:var(--tm);font-size:.74rem;padding:1.3rem .5rem;line-height:1.6}
+
+.sb2{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--gd);color:#fff;padding:.5rem .8rem;z-index:200;text-align:center;font-size:.76rem;font-weight:500;box-shadow:0 -4px 12px rgba(0,0,0,.2)}
+.sb2.show{display:block}
+.cb2{background:rgba(255,255,255,.2);border:none;color:#fff;padding:.16rem .4rem;border-radius:var(--rs);margin-left:.4rem;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.68rem}
+
+.mo{display:none;position:fixed;inset:0;background:rgba(44,36,22,.45);z-index:300;backdrop-filter:blur(2px)}
+.mo.show{display:flex;align-items:center;justify-content:center}
+.mdl{background:var(--sf);border-radius:12px;width:min(560px,94vw);max-height:85vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.2)}
+.mh{padding:.8rem 1rem .5rem;border-bottom:1px solid var(--bl);position:sticky;top:0;background:var(--sf);z-index:1;border-radius:12px 12px 0 0}
+.mh h2{font-family:'Fraunces',serif;font-weight:500;font-size:1.05rem;margin-bottom:.12rem;padding-right:2rem}
+.mh .mds{font-size:.72rem;color:var(--ts)}
+.mh .mch{display:flex;gap:.18rem;margin-top:.25rem;font-size:.6rem;flex-wrap:wrap}
+.mx{position:absolute;top:.6rem;right:.6rem;background:var(--sa);border:none;width:24px;height:24px;border-radius:99px;font-size:.85rem;cursor:pointer;color:var(--ts);display:flex;align-items:center;justify-content:center}
+.mx:hover{background:var(--bd)}
+.mb{padding:.6rem 1rem 1rem}
+.msc{margin-bottom:.6rem}
+.msc h3{font-family:'Fraunces',serif;font-weight:500;font-size:.8rem;margin-bottom:.25rem}
+.mig{display:grid;grid-template-columns:1fr 1fr;gap:.08rem .5rem}
+.mii{font-size:.7rem;color:var(--ts);padding:.08rem 0;display:flex;gap:.2rem}
+.mii .ia{color:var(--tx);font-weight:500;min-width:46px}
+.mst{counter-reset:step}
+.mstp{counter-increment:step;padding:.3rem 0 .3rem 1.6rem;font-size:.72rem;color:var(--ts);line-height:1.4;position:relative;border-bottom:1px solid var(--bl)}
+.mstp:last-child{border-bottom:none}
+.mstp::before{content:counter(step);position:absolute;left:0;top:.25rem;width:1.15rem;height:1.15rem;border-radius:99px;background:var(--gl);color:var(--gn);font-size:.58rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+.mab{width:100%;padding:.42rem;background:var(--gn);color:#fff;border:none;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;margin-top:.3rem}
+.mab:hover{background:var(--gd)}
+.sauce-card{background:var(--bg);border:1px solid var(--bl);border-radius:var(--rs);padding:.45rem .55rem;margin-bottom:.3rem}
+.sauce-card h4{font-family:'Fraunces',serif;font-weight:500;font-size:.8rem;margin-bottom:.12rem}
+.sauce-card .si,.sauce-card .sh{font-size:.68rem;color:var(--ts);margin-bottom:.1rem}
+.sauce-card .sh{font-style:italic}
+.sf-opt{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.4rem}
+.sf-btn{padding:.35rem .7rem;border:1px solid var(--bd);border-radius:var(--rs);background:var(--sf);color:var(--ts);font-family:'Outfit',sans-serif;font-size:.74rem;font-weight:500;cursor:pointer}
+.sf-btn:hover{border-color:var(--gn);color:var(--gn)}
+
+.mt{display:none;background:var(--sf);border-top:1px solid var(--bd);position:fixed;bottom:0;left:0;right:0;z-index:100}
+.mtb{flex:1;padding:.42rem;text-align:center;font-size:.62rem;font-weight:600;color:var(--tm);border:none;background:none;cursor:pointer;font-family:'Outfit',sans-serif}
+.mtb.on{color:var(--gn);border-top:2px solid var(--gn)}
+@media(max-width:1100px){.app{grid-template-columns:240px 1fr 230px}}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 46px - 40px);padding-bottom:44px}
+  .pnl{display:none}.pnl.ap{display:block}.mt{display:flex}
+}
+.pnl::-webkit-scrollbar,.mdl::-webkit-scrollbar{width:4px}
+.pnl::-webkit-scrollbar-thumb,.mdl::-webkit-scrollbar-thumb{background:var(--bd);border-radius:99px}
+@media print{.lib,.plan,header,.mt,.sb2,.mo{display:none!important}.groc{display:block!important;border:none;padding:1.5rem}.app{display:block;height:auto}.gi.ck{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Meal Planner <span>& Groceries</span></h1>
+  <div class="hb">
+    <button class="hbtn" id="btn-sf">✨ Smart Fill</button>
+    <button class="hbtn" id="btn-sauce">🫒 Sauces</button>
+    <button class="hbtn" id="btn-print">🖨 Print</button>
+    <button class="hbtn dng" id="btn-clear">Clear</button>
+  </div>
+</header>
+<div class="app">
+  <div class="pnl lib ap" id="p-lib">
+    <div class="tabs" id="tabs-container"></div>
+    <input type="text" class="sb" placeholder="Search meals or ingredients..." id="search">
+    <div class="fr" id="filters"></div>
+    <div id="mlist"></div>
+  </div>
+  <div class="pnl plan" id="p-plan">
+    <div class="pt">This Week</div>
+    <div id="smoothie-bar" class="smoothie-bar"></div>
+    <div id="pgrid"></div>
+  </div>
+  <div class="pnl groc" id="p-groc">
+    <div class="pt">Grocery List <span class="ct" id="gct">0</span></div>
+    <div class="shop-toggle" id="shop-toggle"></div>
+    <div id="glist"></div>
+  </div>
+</div>
+<div class="mt" id="mobile-tabs"></div>
+<div class="sb2" id="sb2"><span id="stxt"></span><button class="cb2" id="btn-cancel-sel">✕</button></div>
+<div class="mo" id="recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-recipe-close">✕</button><h2 id="r-name"></h2><div class="mds" id="r-desc"></div><div class="mch" id="r-chips"></div></div><div class="mb"><div class="msc"><h3>Ingredients</h3><div class="mig" id="r-ing"></div></div><div class="msc"><h3 id="r-meth">Instructions</h3><div class="mst" id="r-steps"></div></div><button class="mab" id="btn-r-add">+ Add to Plan</button></div></div></div>
+<div class="mo" id="sauce-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sauce-close">✕</button><h2>Sauces & Dressings</h2><div class="mds">Blueprint-friendly. All use olive oil — no seed oils.</div></div><div class="mb" id="sauce-list"></div></div></div>
+<div class="mo" id="sf-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sf-close">✕</button><h2>Smart Fill</h2><div class="mds">Auto-fill empty slots by style:</div></div><div class="mb"><div class="sf-opt" id="sf-opts"></div></div></div></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ═══ SAUCES ═══ */
+var SAUCES=[
+{name:"Lemon Olive Oil Vinaigrette",ing:"3 tbsp olive oil, 1 tbsp lemon juice, 1 tsp Dijon mustard, 1 minced garlic clove, salt & pepper",how:"Whisk everything or shake in a jar. The workhorse dressing — use on any salad. Keeps 1 week."},
+{name:"Tahini Dressing",ing:"2 tbsp tahini, 1 tbsp lemon juice, 1 tbsp water, 1 garlic clove (minced), pinch cumin, salt",how:"Whisk tahini with lemon and water until smooth. Great on grain bowls and Mediterranean salads."},
+{name:"Asian Sesame Dressing",ing:"1 tbsp soy sauce, 1 tbsp rice vinegar, 1 tsp sesame oil, 1 tsp olive oil, 1 tsp grated ginger, pinch chili flakes",how:"Whisk all together. Perfect on Asian salads with cabbage and carrots."},
+{name:"Balsamic Vinaigrette",ing:"3 tbsp olive oil, 1 tbsp balsamic vinegar, 1 tsp Dijon mustard, salt & pepper",how:"Whisk or shake. Classic on mixed greens, tomato salads, and caprese bowls."},
+{name:"Cilantro Lime Dressing",ing:"2 tbsp olive oil, juice of 1 lime, 1/4 cup cilantro, 1 garlic clove, pinch cumin, salt",how:"Blend until smooth. Thin with water if needed. Best on Mexican-style salads."},
+{name:"Greek Yogurt Ranch",ing:"1/4 cup Greek yogurt, 1 tbsp olive oil, 1 tbsp lemon juice, 1 tsp dill, 1/2 tsp garlic powder, 1/2 tsp onion powder, salt",how:"Stir together. Thin with water. High-protein dressing — keeps 5 days."},
+{name:"Gochujang Dressing",ing:"1 tbsp gochujang, 1 tbsp rice vinegar, 1 tsp sesame oil, 1 tsp soy sauce, 1 tsp olive oil, splash water",how:"Whisk until smooth. Spicy and sweet — ideal on Korean bowls."},
+{name:"Peanut Sauce",ing:"2 tbsp peanut butter, 1 tbsp soy sauce, 1 tbsp lime juice, 1 tsp sesame oil, 1 tsp ginger, splash water",how:"Whisk PB with soy and lime. Add water until pourable. Great on Thai salads."},
+{name:"Harissa Vinaigrette",ing:"2 tbsp olive oil, 1 tbsp harissa paste, 1 tbsp lemon juice, 1 garlic clove, salt",how:"Whisk together. Smoky and spicy — great on roasted veg salads and grain bowls."},
+{name:"Miso Ginger Dressing",ing:"1 tbsp miso paste, 1 tbsp rice vinegar, 1 tsp sesame oil, 1 tsp olive oil, 1 tsp ginger, splash water",how:"Whisk miso with vinegar until dissolved. Umami-rich — great on salmon salads."}
+];
+
+/* ═══ SMOOTHIES ═══ */
+var SMOOTHIES=[
+{id:201,name:"Berry Blast",desc:"banana, mixed berries, kefir, spinach",time:5,cal:320,pro:18,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen mixed berries",a:1,u:"cup",c:"frozen"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
+  steps:["Add kefir to blender first.","Add banana (broken into chunks), frozen berries, and frozen spinach.","Blend on high 45-60 seconds until smooth.","Take your Vitamin D with this — the fat in kefir aids absorption."]},
+{id:202,name:"Tropical Green",desc:"mango, banana, kefir, spinach, coconut",time:5,cal:340,pro:16,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen mango",a:1,u:"cup",c:"frozen"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"},{n:"coconut flakes",a:1,u:"tbsp",c:"pantry"}],
+  steps:["Add kefir to blender.","Add banana, frozen mango, frozen spinach, coconut flakes.","Blend 45-60 seconds.","Mango hides the spinach completely."]},
+{id:203,name:"PB Banana",desc:"peanut butter, banana, kefir, cacao",time:5,cal:380,pro:22,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"peanut butter",a:2,u:"tbsp",c:"pantry"},{n:"banana",a:1,u:"",c:"produce"},{n:"cacao powder",a:1,u:"tbsp",c:"pantry"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
+  steps:["Add kefir and peanut butter to blender.","Add banana, cacao powder, frozen spinach.","Blend 45-60 seconds.","Tastes like a chocolate PB shake. Cacao adds antioxidants."]},
+{id:204,name:"Blueberry Almond",desc:"blueberries, banana, almond butter, kefir",time:5,cal:360,pro:20,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"almond butter",a:1.5,u:"tbsp",c:"pantry"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen blueberries",a:1,u:"cup",c:"frozen"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
+  steps:["Add kefir and almond butter to blender.","Add banana, frozen blueberries, frozen spinach.","Blend 45-60 seconds.","Blueberries are the highest-antioxidant berry."]},
+{id:205,name:"Strawberry Banana Classic",desc:"strawberries, banana, kefir, hemp seeds",time:5,cal:310,pro:18,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen strawberries",a:1,u:"cup",c:"frozen"},{n:"hemp seeds",a:1,u:"tbsp",c:"pantry"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
+  steps:["Add kefir to blender.","Add banana, frozen strawberries, hemp seeds, frozen spinach.","Blend 45-60 seconds.","Hemp seeds add omega-3s and protein without changing flavor."]}
+];
+
+/* ═══ LUNCHES (ingredients ordered by step appearance) ═══ */
+var LUNCHES=[
+{id:101,name:"Greek Chicken Salad",desc:"romaine, cucumber, feta, olives, lemon",time:15,cal:420,pro:35,type:"lunch",ip:false,tags:["chicken","mediterranean"],
+  ing:[{n:"olive oil",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:6,u:"oz",c:"protein"},{n:"dried oregano",a:0.5,u:"tsp",c:"pantry"},{n:"romaine lettuce",a:3,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"feta cheese",a:1.5,u:"oz",c:"dairy"},{n:"kalamata olives",a:8,u:"",c:"pantry"}],
+  steps:["Pan-sear chicken in 1 tsp olive oil with oregano, salt, pepper, 5-6 min/side. Rest 3 min, slice.","Chop romaine, dice cucumber, halve tomatoes.","Whisk 1 tbsp olive oil with lemon juice and salt for dressing.","Top salad with chicken, crumbled feta, olives. Drizzle dressing."]},
+{id:102,name:"Caesar Salad w/ Chicken",desc:"romaine, parmesan, homemade caesar",time:15,cal:430,pro:36,type:"lunch",ip:false,tags:["chicken","italian"],
+  ing:[{n:"chicken breast",a:6,u:"oz",c:"protein"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"garlic",a:1,u:"clove",c:"produce"},{n:"Dijon mustard",a:1,u:"tsp",c:"pantry"},{n:"anchovy paste",a:0.5,u:"tsp",c:"pantry"},{n:"romaine lettuce",a:4,u:"cups",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  steps:["Pan-sear chicken 5-6 min/side. Rest and slice.","Make dressing: whisk olive oil, lemon juice, minced garlic, Dijon, anchovy paste.","Chop romaine, toss with dressing.","Top with chicken and shaved parmesan."]},
+{id:103,name:"Asian Sesame Chicken Salad",desc:"cabbage, carrots, edamame, sesame",time:15,cal:400,pro:34,type:"lunch",ip:false,tags:["chicken","asian"],
+  ing:[{n:"chicken breast",a:6,u:"oz",c:"protein"},{n:"frozen edamame",a:0.5,u:"cup",c:"frozen"},{n:"cabbage",a:2,u:"cups",c:"produce"},{n:"carrots",a:1,u:"",c:"produce"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"rice vinegar",a:1,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ginger",a:1,u:"tsp",c:"produce"},{n:"scallions",a:2,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
+  steps:["Pan-sear chicken, rest, slice (or use leftover).","Cook edamame per package. Shred cabbage, julienne carrots.","Make dressing: whisk soy sauce, rice vinegar, sesame oil, olive oil, grated ginger.","Toss cabbage, carrots, edamame. Top with chicken, dressing, scallions, sesame seeds."]},
+{id:104,name:"Salmon Avocado Salad",desc:"mixed greens, avocado, cucumber, miso",time:15,cal:480,pro:32,type:"lunch",ip:false,tags:["seafood","japanese"],
+  ing:[{n:"salmon fillet",a:6,u:"oz",c:"protein"},{n:"miso paste",a:1,u:"tsp",c:"pantry"},{n:"rice vinegar",a:1,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"mixed greens",a:3,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"scallions",a:2,u:"",c:"produce"}],
+  steps:["Pan-sear salmon skin-down 4 min, flip 3 min. Flake into chunks.","Make miso dressing: whisk miso, rice vinegar, sesame oil, olive oil.","Arrange greens, sliced cucumber, avocado.","Top with salmon, drizzle dressing, garnish scallions."]},
+{id:105,name:"Steak & Arugula Salad",desc:"arugula, tomatoes, parmesan, balsamic",time:20,cal:460,pro:36,type:"lunch",ip:false,tags:["beef","italian"],
+  ing:[{n:"sirloin steak",a:6,u:"oz",c:"protein"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"balsamic vinegar",a:1,u:"tbsp",c:"pantry"},{n:"arugula",a:3,u:"cups",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  steps:["Sear steak 3-4 min/side. Rest 5 min, slice against grain.","Whisk olive oil with balsamic and salt for vinaigrette.","Arrange arugula, halved tomatoes, sliced red onion.","Top with steak, drizzle vinaigrette, shave parmesan."]},
+{id:106,name:"Shrimp & Avocado Salad",desc:"greens, corn, cilantro lime dressing",time:15,cal:380,pro:28,type:"lunch",ip:false,tags:["seafood","mexican"],
+  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"shrimp",a:6,u:"oz",c:"protein"},{n:"frozen corn",a:0.5,u:"cup",c:"frozen"},{n:"lime",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"mixed greens",a:3,u:"cups",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"}],
+  steps:["Sear shrimp in 1 tsp olive oil, 2 min/side. Season with cumin. Cook corn in same pan 1 min.","Blend remaining olive oil, lime juice, cilantro, salt for dressing.","Arrange greens, tomatoes, corn, avocado. Top with shrimp, drizzle dressing."]},
+/* ── NEW: Bean & mushroom salads ── */
+{id:107,name:"Chickpea Mediterranean Salad",desc:"cucumber, tomato, feta, tahini",time:10,cal:400,pro:18,type:"lunch",ip:false,tags:["vegetarian","mediterranean"],
+  ing:[{n:"olive oil",a:1,u:"tsp",c:"pantry"},{n:"canned chickpeas",a:1,u:"can",c:"pantry"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"romaine lettuce",a:3,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"tahini",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"feta cheese",a:1,u:"oz",c:"dairy"}],
+  steps:["Drain chickpeas. Pan-fry in 1 tsp olive oil with cumin 5 min until crispy.","Chop romaine, dice cucumber and tomatoes, slice red onion.","Make tahini dressing: whisk tahini, lemon juice, 1 tbsp olive oil, splash of water.","Toss salad, top with crispy chickpeas and crumbled feta, drizzle tahini."]},
+{id:108,name:"White Bean & Arugula Salad",desc:"sun-dried tomato, lemon, olive oil",time:10,cal:380,pro:16,type:"lunch",ip:false,tags:["vegetarian","mediterranean"],
+  ing:[{n:"canned white beans",a:1,u:"can",c:"pantry"},{n:"arugula",a:3,u:"cups",c:"produce"},{n:"sun-dried tomatoes",a:0.25,u:"cup",c:"pantry"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  steps:["Drain and rinse white beans.","Arrange arugula. Top with beans, chopped sun-dried tomatoes, thinly sliced red onion.","Drizzle olive oil and squeeze lemon over everything. Season.","Shave parmesan on top. Ready in under 5 minutes."]},
+{id:109,name:"Black Bean & Corn Salad",desc:"avocado, cilantro lime, bell pepper",time:10,cal:420,pro:17,type:"lunch",ip:false,tags:["vegetarian","mexican"],
+  ing:[{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"frozen corn",a:0.5,u:"cup",c:"frozen"},{n:"bell peppers",a:1,u:"",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"lime",a:1,u:"",c:"produce"},{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"mixed greens",a:2,u:"cups",c:"produce"}],
+  steps:["Drain and rinse black beans. Thaw corn (microwave 1 min or use fresh).","Dice bell pepper and tomatoes. Chop cilantro.","Make dressing: whisk olive oil, lime juice, cumin, salt.","Toss beans, corn, pepper, tomatoes on greens. Top with avocado, cilantro, dressing."]},
+{id:110,name:"Warm Mushroom & Lentil Salad",desc:"spinach, balsamic, walnuts, goat cheese",time:20,cal:440,pro:20,type:"lunch",ip:false,tags:["vegetarian","mediterranean"],
+  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"balsamic vinegar",a:1,u:"tbsp",c:"pantry"},{n:"canned lentils",a:1,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"walnuts",a:2,u:"tbsp",c:"pantry"},{n:"goat cheese",a:1,u:"oz",c:"dairy"}],
+  steps:["Heat olive oil in skillet. Cook sliced mushrooms 4 min until golden. Add garlic 30 sec.","Add balsamic vinegar and drained lentils. Toss 1 min to warm through.","Arrange spinach on plates. Spoon warm mushroom-lentil mixture on top.","Scatter crushed walnuts and crumbled goat cheese."]},
+{id:111,name:"Mushroom & Edamame Asian Salad",desc:"cabbage, carrots, sesame ginger dressing",time:15,cal:370,pro:18,type:"lunch",ip:false,tags:["vegetarian","asian"],
+  ing:[{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"soy sauce",a:0.5,u:"tbsp",c:"pantry"},{n:"frozen edamame",a:0.5,u:"cup",c:"frozen"},{n:"cabbage",a:2,u:"cups",c:"produce"},{n:"carrots",a:1,u:"",c:"produce"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"rice vinegar",a:1,u:"tbsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ginger",a:1,u:"tsp",c:"produce"},{n:"scallions",a:2,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
+  steps:["Cook sliced mushrooms in sesame oil 4 min. Add 1/2 tbsp soy sauce, toss. Set aside to cool slightly.","Cook edamame per package. Shred cabbage, julienne carrots.","Make dressing: whisk 1 tbsp soy sauce, rice vinegar, olive oil, grated ginger.","Toss cabbage, carrots, edamame, mushrooms. Drizzle dressing, top with scallions, sesame seeds."]},
+{id:112,name:"Tuna & White Bean Salad",desc:"arugula, olive oil, lemon, capers",time:10,cal:410,pro:30,type:"lunch",ip:false,tags:["seafood","mediterranean"],
+  ing:[{n:"canned tuna (in water)",a:2,u:"cans",c:"pantry"},{n:"canned white beans",a:1,u:"can",c:"pantry"},{n:"arugula",a:3,u:"cups",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"red onion",a:0.25,u:"",c:"produce"},{n:"capers",a:1,u:"tbsp",c:"pantry"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"}],
+  steps:["Drain tuna and beans. Flake tuna into chunks.","Arrange arugula. Top with beans, tuna, halved tomatoes, red onion, capers.","Drizzle generously with olive oil and lemon. Season.","No cooking required — ready in under 5 minutes."]},
+{id:113,name:"Thai Beef Salad",desc:"cucumber, mint, peanuts, chili lime",time:20,cal:430,pro:34,type:"lunch",ip:false,tags:["beef","thai"],
+  ing:[{n:"sirloin steak",a:6,u:"oz",c:"protein"},{n:"lime",a:1,u:"",c:"produce"},{n:"fish sauce",a:1,u:"tbsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"chili flakes",a:0.5,u:"tsp",c:"pantry"},{n:"mixed greens",a:2,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"fresh mint",a:0.25,u:"cup",c:"produce"},{n:"peanuts",a:2,u:"tbsp",c:"pantry"}],
+  steps:["Sear steak 3-4 min/side. Rest 5 min, slice thin against grain.","Make dressing: whisk lime juice, fish sauce, olive oil, chili flakes.","Arrange greens, sliced cucumber, halved tomatoes, torn mint.","Top with steak, drizzle dressing, scatter crushed peanuts."]},
+{id:114,name:"Egg & Grain Power Bowl",desc:"quinoa, avocado, greens, lemon",time:15,cal:440,pro:24,type:"lunch",ip:false,tags:["eggs","mediterranean"],
+  ing:[{n:"quinoa",a:0.5,u:"cup",c:"grains"},{n:"eggs",a:2,u:"",c:"protein"},{n:"mixed greens",a:2,u:"cups",c:"produce"},{n:"cherry tomatoes",a:0.5,u:"cup",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"sunflower seeds",a:1,u:"tbsp",c:"pantry"}],
+  steps:["Cook quinoa (or use leftover).","Soft-boil eggs: 7 min in boiling water, ice bath. Peel and halve.","Arrange greens, quinoa, halved tomatoes, sliced avocado.","Top with eggs. Drizzle olive oil and lemon. Scatter sunflower seeds."]},
+{id:115,name:"Cannellini Bean & Mushroom Salad",desc:"herbs, lemon, shaved parmesan, warm",time:15,cal:400,pro:18,type:"lunch",ip:false,tags:["vegetarian","italian"],
+  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1.5,u:"cups",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"canned cannellini beans",a:1,u:"can",c:"pantry"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"fresh herbs (parsley/thyme)",a:2,u:"tbsp",c:"produce"},{n:"arugula",a:2,u:"cups",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  steps:["Heat olive oil. Cook sliced mushrooms 4 min until golden. Add minced garlic 30 sec.","Add drained cannellini beans. Toss 1-2 min to warm through.","Squeeze lemon juice over. Toss with chopped fresh herbs.","Serve warm over arugula. Shave parmesan on top."]},
+{id:116,name:"Black Bean & Mushroom Taco Salad",desc:"romaine, corn, avocado, cumin lime",time:15,cal:430,pro:19,type:"lunch",ip:false,tags:["vegetarian","mexican"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1,u:"cup",c:"produce"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"chili powder",a:0.5,u:"tsp",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"frozen corn",a:0.5,u:"cup",c:"frozen"},{n:"romaine lettuce",a:3,u:"cups",c:"produce"},{n:"avocado",a:0.5,u:"",c:"produce"},{n:"lime",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  steps:["Heat olive oil. Cook sliced mushrooms with cumin and chili powder 4 min.","Add drained black beans and corn. Toss 2 min to warm through.","Chop romaine into a bowl. Top with mushroom-bean mixture.","Add sliced avocado, squeeze lime, scatter cilantro."]},
+];
+
+/* ═══ DINNERS (ingredients ordered by step appearance) ═══ */
+var DINNERS=[
+{id:1,name:"Butter Chicken",desc:"tomato-cream sauce, rice, cilantro",time:30,cal:510,pro:38,type:"dinner",ip:true,tags:["chicken","indian"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garam masala",a:2,u:"tsp",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"coconut cream",a:0.5,u:"cup",c:"pantry"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  steps:["Saut\u00e9: olive oil, diced onion 3 min. Add garlic, ginger 1 min.","Add garam masala, cumin, turmeric 30s. Add tomatoes and chicken chunks.","Seal, Pressure Cook HIGH 10 min. Cook rice on stove.","Quick Release. Stir in coconut cream. Serve over rice with cilantro."]},
+{id:2,name:"Chicken Fajitas",desc:"peppers, onions, lime, tortillas",time:25,cal:460,pro:36,type:"dinner",ip:true,tags:["chicken","mexican"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"lime",a:2,u:"",c:"produce"},{n:"corn tortillas",a:8,u:"",c:"grains"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  steps:["Saut\u00e9: olive oil, sliced onion & peppers 3 min. Add garlic, cumin, chili 30s.","Add whole chicken + lime juice + 1/4 cup water. Seal, HIGH 8 min.","Quick Release. Shred chicken, return to pot, toss with juices.","Serve in warm tortillas with avocado and cilantro."]},
+{id:3,name:"Chicken & Broccoli",desc:"garlic ginger sauce, rice, sesame",time:25,cal:470,pro:40,type:"dinner",ip:true,tags:["chicken","asian"],
+  ing:[{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"broccoli",a:4,u:"cups",c:"produce"},{n:"scallions",a:3,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
+  steps:["IP: chicken + soy sauce + sesame oil + garlic + ginger + 1/2 cup water. Seal, HIGH 8 min.","Cook rice. Steam broccoli 3 min. Quick Release. Slice chicken.","Saut\u00e9 to reduce sauce 2-3 min. Serve over rice with broccoli, scallions, sesame."]},
+{id:4,name:"Chicken Tikka Bowl",desc:"yogurt-spiced, rice, cauliflower",time:30,cal:480,pro:36,type:"dinner",ip:true,tags:["chicken","indian"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"canned tomatoes",a:0.5,u:"can",c:"pantry"},{n:"cauliflower",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"yogurt",a:0.5,u:"cup",c:"dairy"},{n:"spinach",a:2,u:"cups",c:"produce"}],
+  steps:["Saut\u00e9: olive oil, garlic, ginger, curry paste 1 min. Add cubed chicken, tomatoes, cauliflower.","Seal, HIGH 10 min. Cook rice. Quick Release.","Stir in yogurt and spinach until wilted. Serve over rice."]},
+{id:5,name:"Chicken Shawarma Bowl",desc:"quinoa, greens, tahini drizzle",time:25,cal:470,pro:36,type:"dinner",ip:true,tags:["chicken","middle-eastern"],
+  ing:[{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:1,u:"",c:"produce"},{n:"quinoa",a:1,u:"cup",c:"grains"},{n:"mixed greens",a:3,u:"cups",c:"produce"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"tahini",a:2,u:"tbsp",c:"pantry"}],
+  steps:["Rub chicken with cumin, turmeric, garlic, olive oil, lemon juice. IP with 1/4 cup water, HIGH 10 min.","Cook quinoa. Quick Release. Shred chicken.","Build bowls: quinoa, greens, chicken, diced cucumber. Drizzle tahini thinned with lemon + water."]},
+{id:6,name:"Chicken Tortilla Soup",desc:"tomato broth, black beans, avocado",time:25,cal:420,pro:34,type:"dinner",ip:true,tags:["chicken","mexican"],
+  ing:[{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1,u:"lb",c:"protein"},{n:"lime",a:1,u:"",c:"produce"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"corn tortillas",a:4,u:"",c:"grains"}],
+  steps:["IP: onion, garlic, tomatoes, beans, spices, 2 cups water. Chicken on top. HIGH 10 min.","Quick Release. Shred chicken, return, add lime juice.","Serve topped with avocado, cilantro, toasted tortilla strips."]},
+{id:7,name:"Harissa Chicken & Farro",desc:"peppers, lemon, olive oil, spinach",time:30,cal:460,pro:34,type:"dinner",ip:true,tags:["chicken","middle-eastern"],
+  ing:[{n:"olive oil",a:1.5,u:"tbsp",c:"pantry"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"harissa paste",a:2,u:"tbsp",c:"pantry"},{n:"farro",a:1,u:"cup",c:"grains"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"lemon",a:1,u:"",c:"produce"}],
+  steps:["Saut\u00e9 peppers + garlic in olive oil 3 min. Rub chicken with harissa, place on top.","Add farro + 2 cups water. Seal, HIGH 12 min. Quick Release.","Slice chicken. Stir spinach into farro. Squeeze lemon over everything."]},
+{id:8,name:"TJ's Bibimbap Bowl",desc:"bulgogi, kimchi, egg, gochujang, edamame",time:25,cal:530,pro:38,type:"dinner",ip:true,tags:["beef","korean"],
+  ing:[{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"TJ's Korean beef bulgogi",a:1,u:"pack",c:"protein"},{n:"frozen edamame",a:1,u:"cup",c:"frozen"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"eggs",a:2,u:"",c:"protein"},{n:"kimchi",a:0.5,u:"cup",c:"fermented"},{n:"shredded carrots",a:1,u:"cup",c:"produce"},{n:"gochujang",a:2,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"scallions",a:3,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
+  steps:["IP rice: 1.75 cups water, HIGH 15 min, Natural Release 10 min.","Skillet: sear bulgogi 4-5 min. Microwave edamame. Wilt spinach in bulgogi pan.","Fry eggs sunny-side up. Build bowls: rice, bulgogi, kimchi, edamame, raw carrots, spinach.","Top with egg, gochujang, sesame oil, scallions, sesame seeds."]},
+{id:9,name:"Beef Stew",desc:"potatoes, carrots, herbs, rich broth",time:40,cal:480,pro:38,type:"dinner",ip:true,tags:["beef","american"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"beef stew meat",a:1.5,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"beef broth",a:2,u:"cups",c:"pantry"},{n:"canned tomatoes",a:0.5,u:"can",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"potatoes",a:3,u:"",c:"produce"},{n:"carrots",a:3,u:"",c:"produce"}],
+  steps:["Saut\u00e9: sear beef in olive oil. Add onion, garlic.","Add broth, tomatoes, thyme. Deglaze. Add cubed potatoes and carrots.","Seal, HIGH 20 min. Natural Release 10 min. Season and serve."]},
+{id:10,name:"Shepherd's Pie",desc:"beef filling, mashed potato top",time:40,cal:500,pro:36,type:"dinner",ip:true,tags:["beef","american"],
+  ing:[{n:"potatoes",a:4,u:"",c:"produce"},{n:"butter",a:2,u:"tbsp",c:"dairy"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground beef (lean)",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"tomato paste",a:2,u:"tbsp",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"beef broth",a:0.5,u:"cup",c:"pantry"},{n:"frozen peas",a:1,u:"cup",c:"frozen"}],
+  steps:["IP: potato chunks on trivet, 1 cup water, HIGH 8 min. QR. Mash with butter.","Brown beef with onion, carrots in olive oil 5 min. Add garlic, tomato paste, thyme, broth, peas.","Transfer to oven dish, spread mash on top. Broil 5 min until golden."]},
+{id:11,name:"Pork Carnitas",desc:"black beans, rice, lime, cilantro",time:45,cal:500,pro:38,type:"dinner",ip:true,tags:["pork","mexican"],
+  ing:[{n:"pork shoulder",a:2,u:"lb",c:"protein"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"lime",a:2,u:"",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  steps:["Season pork with cumin, chili powder. Sear in olive oil. Add onion, garlic, lime juice, 1/2 cup water.","Seal, HIGH 25 min. NR 10 min. Shred. Optional: broil 3 min for crispy edges.","Serve over rice with beans, cilantro, lime."]},
+{id:12,name:"Pork Ramen",desc:"miso broth, bok choy, soft egg",time:30,cal:490,pro:36,type:"dinner",ip:true,tags:["pork","japanese"],
+  ing:[{n:"pork tenderloin",a:1,u:"lb",c:"protein"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"miso paste",a:2,u:"tbsp",c:"pantry"},{n:"ramen noodles",a:2,u:"packs",c:"grains"},{n:"bok choy",a:2,u:"cups",c:"produce"},{n:"eggs",a:2,u:"",c:"protein"},{n:"scallions",a:4,u:"",c:"produce"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"}],
+  steps:["IP: pork + soy + ginger + garlic + 4 cups water. HIGH 15 min. QR.","Slice pork, strain broth. Saut\u00e9: dissolve miso in broth. Add noodles 3 min, bok choy last min.","Soft-boil eggs 6.5 min, ice bath. Build bowls: noodles/broth, pork, egg, scallions, sesame oil."]},
+{id:13,name:"Turkey Bolognese",desc:"whole wheat pasta, side salad",time:25,cal:460,pro:34,type:"dinner",ip:true,tags:["turkey","italian"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"dried oregano",a:1,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"whole wheat pasta",a:8,u:"oz",c:"grains"},{n:"mixed greens",a:2,u:"cups",c:"produce"}],
+  steps:["Saut\u00e9: brown turkey with onion, carrots in olive oil 5 min. Garlic, oregano 1 min.","Add tomatoes, pasta, 1.5 cups water. Seal, HIGH 5 min. QR. Stir.","Serve with side salad of greens with olive oil and lemon."]},
+{id:14,name:"Turkey Chili",desc:"black beans, peppers, avocado",time:30,cal:440,pro:36,type:"dinner",ip:true,tags:["turkey","mexican"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:2,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tbsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"avocado",a:1,u:"",c:"produce"}],
+  steps:["Saut\u00e9: brown turkey in olive oil 4 min. Add onion, peppers, garlic 2 min.","Add cumin, chili powder, tomatoes, drained beans, 1 cup water. Seal, HIGH 10 min. NR 5 min.","Serve topped with avocado."]},
+{id:15,name:"Minestrone Soup",desc:"beans, pasta, vegetables, tomato broth",time:25,cal:380,pro:16,type:"dinner",ip:true,tags:["vegetarian","italian"],
+  ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"celery",a:2,u:"stalks",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"dried oregano",a:1,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"canned white beans",a:1,u:"can",c:"pantry"},{n:"zucchini",a:1,u:"",c:"produce"},{n:"whole wheat pasta (small)",a:4,u:"oz",c:"grains"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"parmesan",a:1,u:"oz",c:"dairy"}],
+  steps:["Saut\u00e9: olive oil, onion, carrots, celery 3 min. Garlic, oregano.","Add tomatoes, beans, zucchini, pasta, 4 cups water. Seal, HIGH 4 min. QR.","Stir in spinach. Serve with olive oil drizzle and parmesan."]},
+{id:16,name:"Hungarian Mushroom Soup",desc:"paprika, dill, sour cream, earthy",time:30,cal:350,pro:12,type:"dinner",ip:true,tags:["vegetarian","european"],
+  ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"mixed mushrooms",a:1.5,u:"lb",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"sweet paprika",a:2,u:"tbsp",c:"pantry"},{n:"dried dill",a:1,u:"tsp",c:"pantry"},{n:"vegetable broth",a:3,u:"cups",c:"pantry"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"sour cream",a:0.5,u:"cup",c:"dairy"},{n:"lemon",a:0.5,u:"",c:"produce"}],
+  steps:["Saut\u00e9: onion in olive oil 3 min. Add mushrooms 5 min. Garlic, paprika, dill 1 min.","Add broth, soy sauce. Seal, HIGH 5 min. QR.","Stir in sour cream and lemon juice (don't boil after). Serve with sourdough."]},
+{id:17,name:"Thai Coconut Mushroom Soup",desc:"coconut, lime, basil, ginger",time:25,cal:320,pro:10,type:"dinner",ip:true,tags:["vegetarian","thai"],
+  ing:[{n:"mixed mushrooms",a:1,u:"lb",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"red curry paste",a:1,u:"tbsp",c:"pantry"},{n:"vegetable broth",a:2,u:"cups",c:"pantry"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"soy sauce",a:1,u:"tbsp",c:"pantry"},{n:"lime",a:1,u:"",c:"produce"},{n:"fresh basil",a:0.5,u:"cup",c:"produce"},{n:"scallions",a:3,u:"",c:"produce"}],
+  steps:["Saut\u00e9 mushrooms dry 3 min. Add ginger, garlic, curry paste. Add broth + coconut milk.","Seal, HIGH 5 min. QR. Add soy sauce, lime juice.","Serve topped with torn basil and scallions."]},
+{id:18,name:"Lentil Soup",desc:"carrots, cumin, lemon, warming",time:30,cal:390,pro:22,type:"dinner",ip:true,tags:["vegetarian","middle-eastern"],
+  ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"carrots",a:3,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"red lentils",a:1.5,u:"cups",c:"grains"},{n:"vegetable broth",a:4,u:"cups",c:"pantry"},{n:"spinach",a:2,u:"cups",c:"produce"},{n:"lemon",a:1,u:"",c:"produce"}],
+  steps:["Saut\u00e9: onion, carrots in olive oil 3 min. Garlic, cumin, turmeric 1 min.","Add lentils + broth. Seal, HIGH 10 min. NR 5 min.","Stir in spinach, squeeze lemon. Partially blend for creamy texture. Drizzle olive oil."]},
+{id:19,name:"Chickpea Coconut Curry",desc:"spinach, over rice",time:25,cal:450,pro:18,type:"dinner",ip:true,tags:["vegetarian","indian"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"canned chickpeas",a:2,u:"cans",c:"pantry"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"canned tomatoes",a:0.5,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
+  steps:["Saut\u00e9: onion in olive oil 3 min. Garlic, ginger, curry paste 1 min.","Add chickpeas, coconut milk, tomatoes. Seal, HIGH 5 min. QR. Stir in spinach.","Cook rice on stove. Serve curry over rice."]},
+{id:20,name:"Lentil Dal",desc:"coconut milk, spinach, warm spices",time:25,cal:430,pro:20,type:"dinner",ip:true,tags:["vegetarian","indian"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:1,u:"tbsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"red lentils",a:1.5,u:"cups",c:"grains"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"lemon",a:0.5,u:"",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
+  steps:["Saut\u00e9: onion in olive oil 3 min. Garlic, ginger, curry paste, turmeric.","Add lentils + 3 cups water. Seal, HIGH 8 min. NR 5 min.","Stir in coconut milk, spinach, lemon. Serve over rice."]},
+{id:21,name:"Lentil Sweet Potato Curry",desc:"coconut, spinach, warming",time:30,cal:440,pro:18,type:"dinner",ip:true,tags:["vegetarian","indian"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"red lentils",a:1,u:"cup",c:"grains"},{n:"sweet potato",a:2,u:"",c:"produce"},{n:"coconut milk",a:1,u:"can",c:"pantry"},{n:"spinach",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"}],
+  steps:["Saut\u00e9: onion in olive oil 3 min. Garlic, ginger, curry paste.","Add lentils, cubed sweet potato, coconut milk, 1 cup water. Seal, HIGH 10 min. QR.","Stir in spinach. Serve over rice."]},
+{id:22,name:"Black Bean Soup",desc:"cumin, lime, avocado, cilantro",time:40,cal:400,pro:20,type:"dinner",ip:true,tags:["vegetarian","mexican"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"cumin",a:2,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"dried black beans",a:1.5,u:"cups",c:"pantry"},{n:"vegetable broth",a:4,u:"cups",c:"pantry"},{n:"lime",a:1,u:"",c:"produce"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  steps:["Saut\u00e9 onion in olive oil 3 min. Garlic, cumin, chili powder. Add beans + broth.","Seal, HIGH 25 min. NR 15 min. Partially blend. Add lime.","Serve with avocado and cilantro."]},
+{id:23,name:"Mushroom Risotto",desc:"parmesan, arugula, olive oil",time:25,cal:420,pro:16,type:"dinner",ip:true,tags:["vegetarian","italian"],
+  ing:[{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"mixed mushrooms",a:1,u:"lb",c:"produce"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"arborio rice",a:1.5,u:"cups",c:"grains"},{n:"vegetable broth",a:3.5,u:"cups",c:"pantry"},{n:"parmesan",a:2,u:"oz",c:"dairy"},{n:"arugula",a:2,u:"cups",c:"produce"}],
+  steps:["Saut\u00e9 mushrooms in olive oil 4 min (reserve half). Add onion, garlic, thyme. Toast rice 1 min.","Add broth. Seal, HIGH 6 min. QR. Stir vigorously.","Add parmesan + reserved mushrooms. Top with arugula + olive oil drizzle."]},
+{id:24,name:"Cabbage Stew",desc:"turkey, potatoes, carrots, tomato broth",time:30,cal:400,pro:28,type:"dinner",ip:true,tags:["turkey","european"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"sweet paprika",a:1,u:"tsp",c:"pantry"},{n:"thyme",a:1,u:"tsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"potatoes",a:3,u:"",c:"produce"},{n:"carrots",a:2,u:"",c:"produce"},{n:"cabbage",a:0.5,u:"head",c:"produce"},{n:"canned tomatoes",a:1,u:"can",c:"pantry"},{n:"vegetable broth",a:2,u:"cups",c:"pantry"}],
+  steps:["Saut\u00e9: brown turkey in olive oil with paprika + thyme 4 min. Add onion, garlic.","Add potatoes, carrots, cabbage, tomatoes, broth. Push cabbage under liquid.","Seal, HIGH 8 min. QR. Season. Even better the next day."]},
+{id:25,name:"Turkey Sweet Potato Bowl",desc:"black beans, avocado, lime",time:25,cal:490,pro:34,type:"dinner",ip:true,tags:["turkey","mexican"],
+  ing:[{n:"sweet potato",a:2,u:"",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"ground turkey",a:1,u:"lb",c:"protein"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"canned black beans",a:1,u:"can",c:"pantry"},{n:"avocado",a:1,u:"",c:"produce"},{n:"lime",a:1,u:"",c:"produce"}],
+  steps:["IP: cubed sweet potatoes on trivet, 1 cup water, HIGH 5 min. QR.","Saut\u00e9: brown turkey with garlic + cumin in olive oil 5 min. Add beans + sweet potato.","Serve with avocado + lime."]},
+/* Non-IP */
+{id:30,name:"Teriyaki Salmon Bowl",desc:"rice, bok choy, ginger, sesame",time:20,cal:490,pro:34,type:"dinner",ip:false,tags:["seafood","japanese"],
+  ing:[{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"salmon fillet",a:12,u:"oz",c:"protein"},{n:"bok choy",a:3,u:"cups",c:"produce"},{n:"scallions",a:3,u:"",c:"produce"}],
+  steps:["Cook rice. Mix soy sauce + 1 tbsp water + ginger for teriyaki.","Pan-sear salmon in sesame oil 4 min skin-down, flip 3 min. Wilt bok choy.","Serve over rice with sauce + scallions."]},
+{id:31,name:"Thai Basil Pork",desc:"rice, fried egg, garlic, chili",time:15,cal:490,pro:36,type:"dinner",ip:false,tags:["pork","thai"],
+  ing:[{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"ground pork",a:1,u:"lb",c:"protein"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"soy sauce",a:2,u:"tbsp",c:"pantry"},{n:"fish sauce",a:1,u:"tbsp",c:"pantry"},{n:"chili flakes",a:0.5,u:"tsp",c:"pantry"},{n:"fresh basil",a:1,u:"cup",c:"produce"},{n:"eggs",a:2,u:"",c:"protein"}],
+  steps:["Cook rice (or use leftover). Sear pork over high heat 4 min. Add garlic, soy, fish sauce, chili 2 min.","Kill heat, toss in basil. Fry eggs sunny-side up. Serve pork over rice with egg."]},
+{id:32,name:"Egg Fried Rice",desc:"mushrooms, scallions, peas, sesame",time:15,cal:400,pro:20,type:"dinner",ip:false,tags:["eggs","asian"],
+  ing:[{n:"eggs",a:4,u:"",c:"protein"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"mushrooms",a:1.5,u:"cups",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"frozen peas",a:0.5,u:"cup",c:"frozen"},{n:"brown rice",a:2,u:"cups cooked",c:"grains"},{n:"soy sauce",a:2,u:"tbsp",c:"pantry"},{n:"scallions",a:4,u:"",c:"produce"}],
+  steps:["Use day-old rice. Scramble 2 eggs in sesame oil, set aside. Cook mushrooms + garlic + peas.","Add rice, press flat, sear 2 min. Add soy sauce. Toss with eggs. Top with scallions + 2 fried eggs."]},
+{id:33,name:"Pesto Chicken Pasta",desc:"zucchini, parmesan, olive oil",time:20,cal:490,pro:38,type:"dinner",ip:false,tags:["chicken","italian"],
+  ing:[{n:"whole wheat pasta",a:8,u:"oz",c:"grains"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"chicken breast",a:1,u:"lb",c:"protein"},{n:"zucchini",a:2,u:"",c:"produce"},{n:"garlic",a:2,u:"cloves",c:"produce"},{n:"pesto",a:3,u:"tbsp",c:"pantry"},{n:"parmesan",a:1.5,u:"oz",c:"dairy"}],
+  steps:["Cook pasta (save 1/2 cup pasta water). Pan-sear chicken in olive oil 5-6 min/side, rest, slice.","Saut\u00e9 zucchini + garlic 3 min. Toss pasta with pesto + zucchini + splash pasta water.","Top with chicken + parmesan."]},
+{id:34,name:"Shrimp Tacos",desc:"cabbage, avocado, cilantro, lime",time:15,cal:390,pro:28,type:"dinner",ip:false,tags:["seafood","mexican"],
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"shrimp",a:1,u:"lb",c:"protein"},{n:"cumin",a:0.5,u:"tsp",c:"pantry"},{n:"cabbage",a:2,u:"cups",c:"produce"},{n:"lime",a:2,u:"",c:"produce"},{n:"corn tortillas",a:8,u:"",c:"grains"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
+  steps:["Sear shrimp in olive oil with cumin 2 min/side. Make cabbage slaw with lime + salt.","Warm tortillas. Build tacos: shrimp, slaw, avocado, cilantro, lime."]},
+{id:35,name:"Korean Beef Bowl",desc:"rice, kimchi, egg, gochujang",time:20,cal:520,pro:36,type:"dinner",ip:false,tags:["beef","korean"],
+  ing:[{n:"brown rice",a:1.5,u:"cups cooked",c:"grains"},{n:"ground beef (lean)",a:1,u:"lb",c:"protein"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"eggs",a:2,u:"",c:"protein"},{n:"kimchi",a:0.5,u:"cup",c:"fermented"},{n:"scallions",a:3,u:"",c:"produce"},{n:"gochujang",a:1,u:"tbsp",c:"pantry"}],
+  steps:["Cook rice (or use leftover). Brown beef 4 min, add garlic, ginger, soy, sesame oil 2 min.","Fry eggs sunny-side up. Build bowls: rice, beef, kimchi, scallions, egg, gochujang drizzle."]},
+];
+
+var ALL=[].concat(SMOOTHIES, LUNCHES, DINNERS);
+var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var PTAGS=['chicken','beef','pork','turkey','seafood','eggs','vegetarian'];
+var CUISINES=[
+  {label:'\ud83d\udd00 Best Overlap',val:'overlap'},
+  {label:'\ud83e\udd57 Vegetarian',val:'vegetarian'},
+  {label:'\ud83c\uddef\ud83c\uddf5 Japanese',val:'japanese'},
+  {label:'\ud83c\uddf0\ud83c\uddf7 Korean',val:'korean'},
+  {label:'\ud83c\uddf9\ud83c\udded Thai',val:'thai'},
+  {label:'\ud83c\uddf2\ud83c\uddfd Mexican',val:'mexican'},
+  {label:'\ud83c\uddee\ud83c\uddf3 Indian',val:'indian'},
+  {label:'\ud83c\uddee\ud83c\uddf9 Italian',val:'italian'},
+  {label:'\ud83c\udf0a Mediterranean',val:'mediterranean'},
+  {label:'\ud83c\udf0d Middle Eastern',val:'middle-eastern'},
+  {label:'\ud83c\uddfa\ud83c\uddf8 American',val:'american'},
+  {label:'\ud83c\uddea\ud83c\uddfa European',val:'european'},
+  {label:'\ud83e\udd62 Asian',val:'asian'}
+];
+
+// ── State ──
+var plan={};DAYS.forEach(function(d){plan[d]={lunch:null,dinner:null};});
+var checks={},activeF='all',ipFilter='all',curTab='lunch',selId=null,selSlot=null,modalId=null,shopFreq=1;
+var selSmoothie=null,addProtein=false;
+
+try{var _s=localStorage.getItem('mp6p');if(_s)plan=JSON.parse(_s);}catch(e){}
+try{var _c=localStorage.getItem('mp6c');if(_c)checks=JSON.parse(_c);}catch(e){}
+try{var _sm=localStorage.getItem('mp6sm');if(_sm)selSmoothie=JSON.parse(_sm);}catch(e){}
+try{var _ap=localStorage.getItem('mp6ap');if(_ap)addProtein=JSON.parse(_ap);}catch(e){}
+
+function save(){
+  try{localStorage.setItem('mp6p',JSON.stringify(plan));localStorage.setItem('mp6c',JSON.stringify(checks));
+  localStorage.setItem('mp6sm',JSON.stringify(selSmoothie));localStorage.setItem('mp6ap',JSON.stringify(addProtein));}catch(e){}
+}
+function fA(a,u){var n=(a===Math.floor(a))?Math.floor(a):Math.round(a*10)/10;if(!u||u==='')return ''+n;if(u==='can'||u==='cans')return n<=1?'1 can':n+' cans';if(u==='pack'||u==='packs')return n<=1?'1 pack':n+' packs';if(u==='cloves'||u==='clove')return n+' cloves';if(u==='stalks')return n+' stalks';if(u==='head')return n<=1?'1 head':n+' heads';return n+' '+u;}
+function $(id){return document.getElementById(id);}
+function findMeal(id){for(var i=0;i<ALL.length;i++){if(ALL[i].id===id)return ALL[i];}return null;}
+
+// ── Tabs ──
+function renderTabs(){
+  $('tabs-container').innerHTML='<button class="tab '+(curTab==='smoothie'?'on':'')+'" data-t="smoothie">\ud83e\udd64 Smoothies</button><button class="tab '+(curTab==='lunch'?'on':'')+'" data-t="lunch">\ud83e\udd57 Lunches</button><button class="tab '+(curTab==='dinner'?'on':'')+'" data-t="dinner">\ud83c\udf72 Dinners</button>';
+  $('tabs-container').querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){curTab=this.dataset.t;activeF='all';ipFilter='all';renderTabs();renderF();renderLib();});});
+}
+function renderF(){
+  var el=$('filters');var h='';
+  ['all'].concat(PTAGS).forEach(function(t){h+='<span class="ft '+(activeF===t?'on':'')+'" data-f="'+t+'">'+(t==='all'?'All':t[0].toUpperCase()+t.slice(1))+'</span>';});
+  if(curTab==='dinner'){h+='<span class="ft '+(ipFilter==='ip'?'ip':'')+'" data-ip="ip" style="margin-left:2px">\ud83c\udf72 IP</span><span class="ft '+(ipFilter==='noip'?'on':'')+'" data-ip="noip">\ud83c\udf73 Skillet</span>';}
+  el.innerHTML=h;
+  el.querySelectorAll('[data-f]').forEach(function(s){s.addEventListener('click',function(){activeF=this.dataset.f;renderF();renderLib();});});
+  el.querySelectorAll('[data-ip]').forEach(function(s){s.addEventListener('click',function(){ipFilter=ipFilter===this.dataset.ip?'all':this.dataset.ip;renderF();renderLib();});});
+}
+function renderLib(){
+  var q=$('search').value.toLowerCase();
+  var pool=curTab==='dinner'?DINNERS:curTab==='lunch'?LUNCHES:SMOOTHIES;
+  var fl=pool.filter(function(m){var ms=!q||m.name.toLowerCase().indexOf(q)>-1||m.desc.toLowerCase().indexOf(q)>-1||m.tags.some(function(t){return t.indexOf(q)>-1;})||m.ing.some(function(i){return i.n.toLowerCase().indexOf(q)>-1;});var mf=activeF==='all'||m.tags.indexOf(activeF)>-1;var mi=ipFilter==='all'||(ipFilter==='ip'&&m.ip)||(ipFilter==='noip'&&!m.ip);return ms&&mf&&mi;});
+  var el=$('mlist');
+  el.innerHTML=fl.map(function(m){var tag=m.type==='smoothie'?'<span class="ch c-sk">Blender</span>':m.ip?'<span class="ch c-ip">Instant Pot</span>':'<span class="ch c-sk">Stovetop</span>';return '<div class="mc '+(selId===m.id?'sel':'')+'" data-id="'+m.id+'"><div class="mn">'+m.name+'</div><div class="md">'+m.desc+'</div><div class="mm"><span class="ch c-t">'+m.time+'m</span><span class="ch c-c">'+m.cal+' cal</span><span class="ch c-p">'+m.pro+'g pro</span>'+tag+'<button class="rb" data-r="'+m.id+'">\ud83d\udcd6</button></div></div>';}).join('');
+  el.querySelectorAll('.mc').forEach(function(c){c.addEventListener('click',function(e){if(e.target.classList.contains('rb'))return;selMeal(parseInt(this.dataset.id));});c.setAttribute('draggable','true');c.addEventListener('dragstart',function(e){window._did=parseInt(this.dataset.id);e.dataTransfer.effectAllowed='copy';});});
+  el.querySelectorAll('.rb').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();showR(parseInt(this.dataset.r));});});
+}
+
+// ── Recipe Modal ──
+function showR(id){var m=findMeal(id);if(!m)return;modalId=id;$('r-name').textContent=m.name;$('r-desc').textContent=m.desc;var ml=m.type==='smoothie'?'Instructions':m.ip?'Instant Pot Instructions':'Stovetop Instructions';$('r-meth').textContent=ml;var tag=m.type==='smoothie'?'<span class="ch c-sk">Blender</span>':m.ip?'<span class="ch c-ip">Instant Pot</span>':'<span class="ch c-sk">Stovetop</span>';$('r-chips').innerHTML='<span class="ch c-t">'+m.time+' min</span><span class="ch c-c">'+m.cal+' cal</span><span class="ch c-p">'+m.pro+'g protein</span>'+tag;$('r-ing').innerHTML=m.ing.map(function(i){return '<div class="mii"><span class="ia">'+fA(i.a,i.u)+'</span><span>'+i.n+'</span></div>';}).join('');$('r-steps').innerHTML=m.steps.map(function(s){return '<div class="mstp">'+s+'</div>';}).join('');var btn=$('btn-r-add');var slot=m.type;var planned=m.type==='smoothie'?selSmoothie===id:DAYS.some(function(d){return plan[d][slot]===id;});btn.textContent=planned?'\u2713 Already Planned':'+ Add to Plan';btn.disabled=planned;btn.style.opacity=planned?'.5':'1';$('recipe-modal').classList.add('show');}
+function closeModal(){$('recipe-modal').classList.remove('show');modalId=null;}
+function addFromModal(){if(!modalId)return;var m=findMeal(modalId);if(!m)return;if(m.type==='smoothie'){selSmoothie=m.id;checks={};save();renderSmoothie();renderGroc();closeModal();return;}var slot=m.type;var day=null;for(var i=0;i<DAYS.length;i++){if(!plan[DAYS[i]][slot]){day=DAYS[i];break;}}if(!day){alert('All '+slot+' slots full!');return;}plan[day][slot]=modalId;checks={};save();renderPlan();renderGroc();closeModal();}
+
+// ── Sauces ──
+function showSauces(){$('sauce-list').innerHTML=SAUCES.map(function(s){return '<div class="sauce-card"><h4>'+s.name+'</h4><div class="si"><strong>Ingredients:</strong> '+s.ing+'</div><div class="sh"><strong>How:</strong> '+s.how+'</div></div>';}).join('');$('sauce-modal').classList.add('show');}
+
+// ── Smart Fill ──
+function showSF(){$('sf-opts').innerHTML=CUISINES.map(function(c){return '<button class="sf-btn" data-cu="'+c.val+'">'+c.label+'</button>';}).join('');$('sf-opts').querySelectorAll('.sf-btn').forEach(function(b){b.addEventListener('click',function(){doSF(this.dataset.cu);$('sf-modal').classList.remove('show');});});$('sf-modal').classList.add('show');}
+function doSF(cuisine){
+  ['lunch','dinner'].forEach(function(slot){var pool=slot==='lunch'?LUNCHES:DINNERS;if(cuisine!=='overlap'){pool=pool.filter(function(m){return m.tags.indexOf(cuisine)>-1;});}var empty=DAYS.filter(function(d){return !plan[d][slot];});var used={};DAYS.forEach(function(d){if(plan[d][slot])used[plan[d][slot]]=true;});for(var i=0;i<empty.length;i++){var day=empty[i];var curIng={};DAYS.forEach(function(d){['lunch','dinner'].forEach(function(s){if(plan[d][s]){var m2=findMeal(plan[d][s]);if(m2)m2.ing.forEach(function(ig){curIng[ig.n]=true;});}});});var avail=pool.filter(function(m){return !used[m.id];});if(!avail.length)break;var scored=avail.map(function(m){var ov=m.ing.filter(function(ig){return curIng[ig.n];}).length;return{m:m,sc:ov/m.ing.length+Math.random()*.2};}).sort(function(a,b){return b.sc-a.sc;});var pick=scored[Math.floor(Math.random()*Math.min(3,scored.length))].m;plan[day][slot]=pick.id;used[pick.id]=true;}});
+  checks={};save();renderPlan();renderGroc();
+}
+
+// ── Select/Tap ──
+function selMeal(id){if(selId===id){cancelSel();return;}selId=id;var m=findMeal(id);if(!m)return;if(m.type==='smoothie'){selSmoothie=id;checks={};save();renderSmoothie();renderGroc();return;}selSlot=m.type;$('stxt').textContent='"'+m.name+'" \u2014 tap a '+selSlot+' slot';$('sb2').classList.add('show');renderLib();renderPlan();if(window.innerWidth<=900){document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('ap');});$('p-plan').classList.add('ap');document.querySelectorAll('.mtb').forEach(function(t){t.classList.remove('on');});document.querySelectorAll('.mtb')[1].classList.add('on');}}
+function cancelSel(){selId=null;selSlot=null;$('sb2').classList.remove('show');renderLib();renderPlan();}
+function tapSlot(day,slot){if(selId!==null&&selSlot===slot){plan[day][slot]=selId;cancelSel();checks={};save();renderPlan();renderGroc();}}
+
+// ── Smoothie Bar ──
+function renderSmoothie(){
+  var bar=$('smoothie-bar');var opts=SMOOTHIES.map(function(s){return '<option value="'+s.id+'"'+(selSmoothie===s.id?' selected':'')+'>'+s.name+'</option>';}).join('');
+  bar.innerHTML='<label>\ud83e\udd64 Daily Smoothie</label><select id="sm-sel"><option value="">None</option>'+opts+'</select><button class="sm-rb" id="sm-recipe">\ud83d\udcd6</button><div class="sb-add"><input type="checkbox" id="prot-chk"'+(addProtein?' checked':'')+'><label for="prot-chk">+ Protein powder</label></div>';
+  $('sm-sel').addEventListener('change',function(){selSmoothie=this.value?parseInt(this.value):null;checks={};save();renderGroc();});
+  $('sm-recipe').addEventListener('click',function(){if(selSmoothie)showR(selSmoothie);});
+  $('prot-chk').addEventListener('change',function(){addProtein=this.checked;save();renderGroc();});
+}
+
+// ── Planner (vertical day rows) ──
+function renderPlan(){
+  var grid=$('pgrid');var today=new Date().getDay();var dm=[6,0,1,2,3,4,5];var ti=dm[today];
+  grid.innerHTML=DAYS.map(function(day,i){
+    var lm=plan[day].lunch?findMeal(plan[day].lunch):null;
+    var dm2=plan[day].dinner?findMeal(plan[day].dinner):null;
+    var tapL=selId!==null&&selSlot==='lunch'&&!lm;
+    var tapD=selId!==null&&selSlot==='dinner'&&!dm2;
+    return '<div class="day-row"><div class="day-label '+(i===ti?'tdy':'')+'">'+day+'</div>'+
+      '<div class="slot '+(tapL?'tt':'')+'" data-day="'+day+'" data-slot="lunch"><div class="slot-lbl">\ud83e\udd57 Lunch</div>'+(lm?'<div class="slot-meal lunch" data-r="'+lm.id+'">'+lm.name+'<button class="rm" data-rm="'+day+'-lunch">\u00d7</button></div>':'<div class="slot-empty">'+(tapL?'\u2190 tap':'\u2014')+'</div>')+'</div>'+
+      '<div class="slot '+(tapD?'tt':'')+'" data-day="'+day+'" data-slot="dinner"><div class="slot-lbl">\ud83c\udf72 Dinner</div>'+(dm2?'<div class="slot-meal dinner" data-r="'+dm2.id+'">'+dm2.name+'<button class="rm" data-rm="'+day+'-dinner">\u00d7</button></div>':'<div class="slot-empty">'+(tapD?'\u2190 tap':'\u2014')+'</div>')+'</div></div>';
+  }).join('');
+  grid.querySelectorAll('.slot').forEach(function(s){
+    s.addEventListener('click',function(e){if(e.target.classList.contains('rm')||e.target.classList.contains('slot-meal'))return;tapSlot(this.dataset.day,this.dataset.slot);});
+    s.addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag-over');});
+    s.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+    s.addEventListener('drop',function(e){e.preventDefault();this.classList.remove('drag-over');var id=window._did;if(!id)return;var m=findMeal(id);if(!m||m.type!==this.dataset.slot)return;plan[this.dataset.day][this.dataset.slot]=id;checks={};save();renderPlan();renderGroc();});
+  });
+  grid.querySelectorAll('.slot-meal').forEach(function(sm){sm.addEventListener('click',function(e){if(!e.target.classList.contains('rm'))showR(parseInt(this.dataset.r));});});
+  grid.querySelectorAll('.rm').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();var p=this.dataset.rm.split('-');plan[p[0]][p[1]]=null;checks={};save();renderPlan();renderGroc();});});
+}
+
+// ── Shop toggle ──
+function renderShopToggle(){
+  var el=$('shop-toggle');el.innerHTML='<button class="shop-btn '+(shopFreq===1?'on':'')+'" data-f="1">1 Shop</button><button class="shop-btn '+(shopFreq===2?'on':'')+'" data-f="2">2 Shops</button>';
+  el.querySelectorAll('.shop-btn').forEach(function(b){b.addEventListener('click',function(){shopFreq=parseInt(this.dataset.f);renderShopToggle();renderGroc();});});
+}
+
+// ── Grocery ──
+function renderGroc(){
+  var el=$('glist');var planned=[];var dayMeals={};
+  DAYS.forEach(function(d){dayMeals[d]=[];['lunch','dinner'].forEach(function(s){if(plan[d][s]){var m=findMeal(plan[d][s]);if(m){planned.push(m);dayMeals[d].push(m);}}});});
+  if(!planned.length&&!selSmoothie){el.innerHTML='<div class="ge"><div style="font-size:1.5rem;margin-bottom:.3rem">\ud83d\uded2</div><strong>Tap a meal</strong> then <strong>tap a slot</strong><br>or use <strong>Smart Fill</strong></div>';$('gct').textContent='0';return;}
+  var shops=shopFreq===2?[{label:'Shop 1 (Mon\u2013Wed)',days:['Mon','Tue','Wed']},{label:'Shop 2 (Thu\u2013Sun)',days:['Thu','Fri','Sat','Sun']}]:[{label:null,days:DAYS}];
+  var html='',totalItems=0;
+  shops.forEach(function(shop){
+    var agg={};function add(n,a,u,c){var k=n.toLowerCase();if(!agg[k])agg[k]={name:n,amt:0,unit:u,cat:c};agg[k].amt+=a;}
+    if(selSmoothie){var sm=findMeal(selSmoothie);if(sm){var mult=shop.days.length;sm.ing.forEach(function(ig){add(ig.n,ig.a*mult,ig.u,ig.c);});if(addProtein)add('protein powder',mult,'scoops','pantry');}}
+    shop.days.forEach(function(d){dayMeals[d].forEach(function(m){m.ing.forEach(function(ig){add(ig.n,ig.a,ig.u,ig.c);});});});
+    var cats=[{k:'protein',l:'Protein',i:'\ud83e\udd69'},{k:'produce',l:'Produce',i:'\ud83e\udd2c'},{k:'dairy',l:'Dairy',i:'\ud83e\uddc0'},{k:'grains',l:'Grains',i:'\ud83c\udf3e'},{k:'frozen',l:'Frozen',i:'\ud83e\uddca'},{k:'fermented',l:'Fermented',i:'\ud83e\uded9'},{k:'pantry',l:'Pantry (check stock)',i:'\ud83e\uded2'}];
+    var groups={};Object.keys(agg).forEach(function(k){var it=agg[k];if(!groups[it.cat])groups[it.cat]=[];groups[it.cat].push(it);});
+    var count=Object.keys(agg).length;totalItems+=count;
+    if(shop.label)html+='<div class="shop-hdr">'+shop.label+' \u2014 '+count+' items</div>';
+    cats.forEach(function(cat){var items=groups[cat.k];if(!items||!items.length)return;items.sort(function(a,b){return a.name.localeCompare(b.name);});html+='<div class="gc"><div class="gch">'+cat.i+' '+cat.l+'</div>';items.forEach(function(item){var k=item.name.toLowerCase();var chk=checks[k]||false;html+='<div class="gi '+(chk?'ck':'')+'"><input type="checkbox" data-ck="'+k.replace(/'/g,"\\'")+'" '+(chk?'checked':'')+'><span>'+item.name+'</span><span class="at">'+fA(item.amt,item.unit)+'</span></div>';});html+='</div>';});
+  });
+  var summary='<div class="gs"><span>'+planned.length+' meals'+(selSmoothie?' + smoothie':'')+'</span><span>'+totalItems+' items</span></div>';
+  el.innerHTML=summary+html;$('gct').textContent=totalItems;
+  el.querySelectorAll('input[data-ck]').forEach(function(cb){cb.addEventListener('change',function(){checks[this.dataset.ck]=this.checked;save();renderGroc();});});
+}
+
+// ── Mobile tabs ──
+function renderMobile(){
+  $('mobile-tabs').innerHTML='<button class="mtb on" data-p="lib">\ud83c\udf7d Meals</button><button class="mtb" data-p="plan">\ud83d\udcc5 Plan</button><button class="mtb" data-p="groc">\ud83d\uded2 List</button>';
+  $('mobile-tabs').querySelectorAll('.mtb').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('ap');});$('p-'+this.dataset.p).classList.add('ap');$('mobile-tabs').querySelectorAll('.mtb').forEach(function(t){t.classList.remove('on');});this.classList.add('on');});});
+}
+
+// ── Header button events ──
+$('btn-clear').addEventListener('click',function(){
+  if(!confirm('Clear all meals from this week?'))return;
+  DAYS.forEach(function(d){plan[d]={lunch:null,dinner:null};});
+  checks={};
+  save();
+  renderPlan();
+  renderGroc();
+});
+
+$('btn-print').addEventListener('click',function(){
+  window.print();
+});
+
+$('btn-sf').addEventListener('click',function(){showSF();});
+$('btn-sauce').addEventListener('click',function(){showSauces();});
+$('btn-recipe-close').addEventListener('click',function(){closeModal();});
+$('btn-sauce-close').addEventListener('click',function(){$('sauce-modal').classList.remove('show');});
+$('btn-sf-close').addEventListener('click',function(){$('sf-modal').classList.remove('show');});
+$('btn-cancel-sel').addEventListener('click',function(){cancelSel();});
+$('btn-r-add').addEventListener('click',function(){addFromModal();});
+$('recipe-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+$('sauce-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
+$('sf-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
+$('search').addEventListener('input',function(){renderLib();});
+
+// ── Init ──
+renderTabs();renderF();renderLib();renderSmoothie();renderPlan();renderShopToggle();renderGroc();renderMobile();
+
+})();
+</script>
+</body>
+</html>
