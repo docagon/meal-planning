@@ -120,6 +120,19 @@ header h1 span{opacity:.6;font-weight:300}
 .sf-btn{padding:.35rem .7rem;border:1px solid var(--bd);border-radius:var(--rs);background:var(--sf);color:var(--ts);font-family:'Outfit',sans-serif;font-size:.74rem;font-weight:500;cursor:pointer}
 .sf-btn:hover{border-color:var(--gn);color:var(--gn)}
 
+.opt-lbl{font-style:normal;color:var(--tm);font-size:.6rem}
+.fb{background:none;border:1px solid transparent;border-radius:var(--rs);padding:.08rem .2rem;cursor:pointer;display:inline-flex;align-items:center;line-height:1;opacity:.28;transition:all .15s;flex-shrink:0;}
+.fb:hover{opacity:.7;}.fb.faved{opacity:1;border-color:var(--bd);}
+.mfav{position:absolute;top:.52rem;right:2.3rem;background:none;border:none;cursor:pointer;padding:.15rem;border-radius:99px;opacity:.25;transition:opacity .15s,filter .15s;}
+.mfav:hover{opacity:.7;}.mfav.faved{opacity:1;border:1px solid var(--bd);border-radius:var(--rs);}
+.fav-ft{display:inline-flex;align-items:center;gap:.25rem;}
+.ar-field{margin-bottom:.5rem}.ar-field>label{display:block;font-size:.68rem;font-weight:600;color:var(--ts);margin-bottom:.18rem}
+.ar-input{width:100%;padding:.35rem .5rem;border:1px solid var(--bd);border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.74rem;background:var(--bg);color:var(--tx);outline:none}
+.ar-input:focus{border-color:var(--gn)}.ar-ta{resize:vertical;min-height:80px}
+.ar-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.4rem}
+.ar-url-row{display:flex;gap:.4rem}.ar-url-row .ar-input{flex:1}
+.ar-fetch-btn{white-space:nowrap;padding:.35rem .65rem;background:var(--gn);color:#fff;border:none;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.7rem;font-weight:600;cursor:pointer}
+.ar-fetch-btn:hover{background:var(--gd)}.ar-fetch-btn:disabled{opacity:.55;cursor:not-allowed}
 .mt{display:none;background:var(--sf);border-top:1px solid var(--bd);position:fixed;bottom:0;left:0;right:0;z-index:100}
 .mtb{flex:1;padding:.42rem;text-align:center;font-size:.62rem;font-weight:600;color:var(--tm);border:none;background:none;cursor:pointer;font-family:'Outfit',sans-serif}
 .mtb.on{color:var(--gn);border-top:2px solid var(--gn)}
@@ -137,9 +150,10 @@ header h1 span{opacity:.6;font-weight:300}
 <header>
   <h1>Meal Planner <span>& Groceries</span></h1>
   <div class="hb">
-    <button class="hbtn" id="btn-sf">✨ Smart Fill</button>
-    <button class="hbtn" id="btn-sauce">🫒 Sauces</button>
-    <button class="hbtn" id="btn-print">🖨 Print</button>
+    <button class="hbtn" id="btn-sf">Smart Fill</button>
+    <button class="hbtn" id="btn-add-recipe">Add Recipe</button>
+    <button class="hbtn" id="btn-sauce">Sauces</button>
+    <button class="hbtn" id="btn-print">Print</button>
     <button class="hbtn dng" id="btn-clear">Clear</button>
   </div>
 </header>
@@ -163,9 +177,23 @@ header h1 span{opacity:.6;font-weight:300}
 </div>
 <div class="mt" id="mobile-tabs"></div>
 <div class="sb2" id="sb2"><span id="stxt"></span><button class="cb2" id="btn-cancel-sel">✕</button></div>
-<div class="mo" id="recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-recipe-close">✕</button><h2 id="r-name"></h2><div class="mds" id="r-desc"></div><div class="mch" id="r-chips"></div></div><div class="mb"><div class="msc"><h3>Ingredients</h3><div class="mig" id="r-ing"></div></div><div class="msc"><h3 id="r-meth">Instructions</h3><div class="mst" id="r-steps"></div></div><button class="mab" id="btn-r-add">+ Add to Plan</button></div></div></div>
+<div class="mo" id="recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-recipe-close">✕</button><button class="mfav" id="btn-r-fav" title="Favorite"></button><h2 id="r-name"></h2><div class="mds" id="r-desc"></div><div class="mch" id="r-chips"></div></div><div class="mb"><div class="msc"><h3>Ingredients</h3><div class="mig" id="r-ing"></div></div><div class="msc"><h3 id="r-meth">Instructions</h3><div class="mst" id="r-steps"></div></div><button class="mab" id="btn-r-add">+ Add to Plan</button></div></div></div>
 <div class="mo" id="sauce-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sauce-close">✕</button><h2>Sauces & Dressings</h2><div class="mds">Blueprint-friendly. All use olive oil — no seed oils.</div></div><div class="mb" id="sauce-list"></div></div></div>
 <div class="mo" id="sf-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sf-close">✕</button><h2>Smart Fill</h2><div class="mds">Auto-fill empty slots by style:</div></div><div class="mb"><div class="sf-opt" id="sf-opts"></div></div></div></div>
+<div class="mo" id="add-recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-ar-close">✕</button><h2>Add Recipe</h2><div class="mds">Paste a recipe URL and click Generate — or fill in the fields manually.</div></div><div class="mb">
+  <div class="ar-field"><label>Recipe URL</label><div class="ar-url-row"><input type="text" id="ar-url" class="ar-input" placeholder="https://..."><button id="btn-ar-fetch" class="ar-fetch-btn">Generate from URL</button></div></div>
+  <div class="ar-field"><label>Name *</label><input type="text" id="ar-name" class="ar-input" placeholder="Recipe name"></div>
+  <div class="ar-row">
+    <div class="ar-field"><label>Type</label><select id="ar-type" class="ar-input"><option value="smoothie">Smoothie</option><option value="lunch" selected>Lunch</option><option value="dinner">Dinner</option></select></div>
+    <div class="ar-field"><label>Time (min)</label><input type="number" id="ar-time" class="ar-input" value="15" min="1"></div>
+    <div class="ar-field"><label>Calories</label><input type="number" id="ar-cal" class="ar-input" value="400" min="0"></div>
+    <div class="ar-field"><label>Protein (g)</label><input type="number" id="ar-pro" class="ar-input" value="20" min="0"></div>
+  </div>
+  <div class="ar-field"><label>Short description</label><input type="text" id="ar-desc" class="ar-input" placeholder="e.g. romaine, cucumber, chicken"></div>
+  <div class="ar-field"><label>Ingredients (one per line — e.g. "1 cup kefir" or "banana")</label><textarea id="ar-ing" class="ar-input ar-ta" rows="5" placeholder="1 cup kefir&#10;1 banana&#10;1 cup frozen berries"></textarea></div>
+  <div class="ar-field"><label>Steps (one per line)</label><textarea id="ar-steps" class="ar-input ar-ta" rows="4" placeholder="Add kefir to blender.&#10;Add fruits.&#10;Blend 45 seconds."></textarea></div>
+  <button class="mab" id="btn-ar-save">+ Add Recipe</button>
+</div></div></div>
 
 <script>
 (function(){
@@ -187,21 +215,24 @@ var SAUCES=[
 
 /* ═══ SMOOTHIES ═══ */
 var SMOOTHIES=[
-{id:201,name:"Berry Blast",desc:"banana, mixed berries, kefir, spinach",time:5,cal:320,pro:18,type:"smoothie",ip:false,tags:["smoothie"],
-  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen mixed berries",a:1,u:"cup",c:"frozen"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
-  steps:["Add kefir to blender first.","Add banana (broken into chunks), frozen berries, and frozen spinach.","Blend on high 45-60 seconds until smooth.","Take your Vitamin D with this — the fat in kefir aids absorption."]},
-{id:202,name:"Tropical Green",desc:"mango, banana, kefir, spinach, coconut",time:5,cal:340,pro:16,type:"smoothie",ip:false,tags:["smoothie"],
-  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen mango",a:1,u:"cup",c:"frozen"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"},{n:"coconut flakes",a:1,u:"tbsp",c:"pantry"}],
-  steps:["Add kefir to blender.","Add banana, frozen mango, frozen spinach, coconut flakes.","Blend 45-60 seconds.","Mango hides the spinach completely."]},
+{id:201,name:"Very Berry",desc:"mixed berries, blueberries, raspberries, kefir, honey",time:5,cal:300,pro:16,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"frozen mixed berries",a:1,u:"cup",c:"frozen"},{n:"frozen blueberries",a:0.5,u:"cup",c:"frozen"},{n:"frozen raspberries",a:0.5,u:"cup",c:"frozen"},{n:"honey",a:1,u:"tsp",c:"pantry"}],
+  steps:["Add kefir to blender.","Add frozen mixed berries, blueberries, and raspberries.","Drizzle in honey.","Blend on high 45-60 seconds until smooth and vibrant purple."]},
+{id:202,name:"Tropical Green",desc:"mango, banana, kefir, coconut",time:5,cal:340,pro:16,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen mango",a:1,u:"cup",c:"frozen"},{n:"coconut flakes",a:1,u:"tbsp",c:"pantry"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen",opt:true}],
+  steps:["Add kefir to blender.","Add banana, frozen mango, and coconut flakes. Add frozen spinach if using.","Blend 45-60 seconds.","Mango hides the spinach completely if you add it."]},
 {id:203,name:"PB Banana",desc:"peanut butter, banana, kefir, cacao",time:5,cal:380,pro:22,type:"smoothie",ip:false,tags:["smoothie"],
-  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"peanut butter",a:2,u:"tbsp",c:"pantry"},{n:"banana",a:1,u:"",c:"produce"},{n:"cacao powder",a:1,u:"tbsp",c:"pantry"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
-  steps:["Add kefir and peanut butter to blender.","Add banana, cacao powder, frozen spinach.","Blend 45-60 seconds.","Tastes like a chocolate PB shake. Cacao adds antioxidants."]},
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"peanut butter",a:2,u:"tbsp",c:"pantry"},{n:"banana",a:1,u:"",c:"produce"},{n:"cacao powder",a:1,u:"tbsp",c:"pantry"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen",opt:true}],
+  steps:["Add kefir and peanut butter to blender.","Add banana and cacao powder. Add frozen spinach if using.","Blend 45-60 seconds.","Tastes like a chocolate PB shake. Cacao adds antioxidants."]},
 {id:204,name:"Blueberry Almond",desc:"blueberries, banana, almond butter, kefir",time:5,cal:360,pro:20,type:"smoothie",ip:false,tags:["smoothie"],
-  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"almond butter",a:1.5,u:"tbsp",c:"pantry"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen blueberries",a:1,u:"cup",c:"frozen"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
-  steps:["Add kefir and almond butter to blender.","Add banana, frozen blueberries, frozen spinach.","Blend 45-60 seconds.","Blueberries are the highest-antioxidant berry."]},
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"almond butter",a:1.5,u:"tbsp",c:"pantry"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen blueberries",a:1,u:"cup",c:"frozen"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen",opt:true}],
+  steps:["Add kefir and almond butter to blender.","Add banana and frozen blueberries. Add frozen spinach if using.","Blend 45-60 seconds.","Blueberries are the highest-antioxidant berry."]},
 {id:205,name:"Strawberry Banana Classic",desc:"strawberries, banana, kefir, hemp seeds",time:5,cal:310,pro:18,type:"smoothie",ip:false,tags:["smoothie"],
-  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen strawberries",a:1,u:"cup",c:"frozen"},{n:"hemp seeds",a:1,u:"tbsp",c:"pantry"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen"}],
-  steps:["Add kefir to blender.","Add banana, frozen strawberries, hemp seeds, frozen spinach.","Blend 45-60 seconds.","Hemp seeds add omega-3s and protein without changing flavor."]}
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen strawberries",a:1,u:"cup",c:"frozen"},{n:"hemp seeds",a:1,u:"tbsp",c:"pantry"},{n:"frozen spinach",a:0.5,u:"cup",c:"frozen",opt:true}],
+  steps:["Add kefir to blender.","Add banana, frozen strawberries, and hemp seeds. Add frozen spinach if using.","Blend 45-60 seconds.","Hemp seeds add omega-3s and protein without changing flavor."]},
+{id:206,name:"Classic Smoothie",desc:"banana, strawberry, blueberry, honey, kefir",time:5,cal:330,pro:17,type:"smoothie",ip:false,tags:["smoothie"],
+  ing:[{n:"kefir",a:1,u:"cup",c:"dairy"},{n:"banana",a:1,u:"",c:"produce"},{n:"frozen strawberries",a:0.5,u:"cup",c:"frozen"},{n:"frozen blueberries",a:0.5,u:"cup",c:"frozen"},{n:"honey",a:1,u:"tsp",c:"pantry"},{n:"frozen cherries",a:0.5,u:"cup",c:"frozen",opt:true}],
+  steps:["Add kefir to blender.","Add banana, frozen strawberries, and blueberries.","Drizzle in honey.","Add frozen cherries if using.","Blend 45-60 seconds until smooth."]}
 ];
 
 /* ═══ LUNCHES (ingredients ordered by step appearance) ═══ */
@@ -360,7 +391,10 @@ var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 var PTAGS=['chicken','beef','pork','turkey','seafood','eggs','vegetarian'];
 var CUISINES=[
   {label:'\ud83d\udd00 Best Overlap',val:'overlap'},
+  {label:'My Favs',val:'favs',icon:'cyn'},
   {label:'\ud83e\udd57 Vegetarian',val:'vegetarian'},
+  {label:'\ud83e\udd62 Asian',val:'asian'},
+  {label:'\ud83d\udeb3 Non-Asian',val:'non-asian'},
   {label:'\ud83c\uddef\ud83c\uddf5 Japanese',val:'japanese'},
   {label:'\ud83c\uddf0\ud83c\uddf7 Korean',val:'korean'},
   {label:'\ud83c\uddf9\ud83c\udded Thai',val:'thai'},
@@ -370,20 +404,26 @@ var CUISINES=[
   {label:'\ud83c\udf0a Mediterranean',val:'mediterranean'},
   {label:'\ud83c\udf0d Middle Eastern',val:'middle-eastern'},
   {label:'\ud83c\uddfa\ud83c\uddf8 American',val:'american'},
-  {label:'\ud83c\uddea\ud83c\uddfa European',val:'european'},
-  {label:'\ud83e\udd62 Asian',val:'asian'}
+  {label:'\ud83c\uddea\ud83c\uddfa European',val:'european'}
 ];
+
+// ── Cyndaquil pixel art ──
+var CYN_RECTS='<path fill="#FFE4C2" d="M5,2H4V3H3V2H2V3H0V4H2V8H3V7H5V8H6V5H5z"/><rect fill="#343341" x="3" y="2" width="1" height="1"/><rect fill="#2B676F" x="2" y="1" width="3" height="1"/><rect fill="#2B676F" x="0" y="2" width="2" height="1"/><rect fill="#2B676F" x="5" y="2" width="1" height="3"/><rect fill="#2B676F" x="6" y="5" width="1" height="2"/><path fill="#FFE800" d="M7,3H6V5H8V4H7z"/><rect fill="#FF8D00" x="7" y="2" width="1" height="1"/><rect fill="#FF8D00" x="8" y="4" width="1" height="1"/><rect fill="#FF8D00" x="7" y="5" width="1" height="1"/><rect fill="#FF8D00" x="8" y="6" width="1" height="1"/>';
+function cynSvg(w,h){return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 9" shape-rendering="crispEdges" width="'+w+'" height="'+h+'">'+CYN_RECTS+'</svg>';}
 
 // ── State ──
 var plan={};DAYS.forEach(function(d){plan[d]={lunch:null,dinner:null};});
 var checks={},activeF='all',ipFilter='all',curTab='lunch',selId=null,selSlot=null,modalId=null,shopFreq=1;
-var selSmoothie=null,addProtein=false;
+var selSmoothie=null,addProtein=false,favorites={};
 
 try{var _s=localStorage.getItem('mp6p');if(_s)plan=JSON.parse(_s);}catch(e){}
 try{var _c=localStorage.getItem('mp6c');if(_c)checks=JSON.parse(_c);}catch(e){}
 try{var _sm=localStorage.getItem('mp6sm');if(_sm)selSmoothie=JSON.parse(_sm);}catch(e){}
 try{var _ap=localStorage.getItem('mp6ap');if(_ap)addProtein=JSON.parse(_ap);}catch(e){}
+try{var _cr=JSON.parse(localStorage.getItem('mp6custom')||'[]');_cr.forEach(function(r){ALL.push(r);if(r.type==='smoothie')SMOOTHIES.push(r);else if(r.type==='lunch')LUNCHES.push(r);else DINNERS.push(r);});}catch(e){}
+try{var _fv=localStorage.getItem('mp6fav');if(_fv)favorites=JSON.parse(_fv);}catch(e){}
 
+function saveFavs(){try{localStorage.setItem('mp6fav',JSON.stringify(favorites));}catch(e){}}
 function save(){
   try{localStorage.setItem('mp6p',JSON.stringify(plan));localStorage.setItem('mp6c',JSON.stringify(checks));
   localStorage.setItem('mp6sm',JSON.stringify(selSmoothie));localStorage.setItem('mp6ap',JSON.stringify(addProtein));}catch(e){}
@@ -399,7 +439,7 @@ function renderTabs(){
 }
 function renderF(){
   var el=$('filters');var h='';
-  ['all'].concat(PTAGS).forEach(function(t){h+='<span class="ft '+(activeF===t?'on':'')+'" data-f="'+t+'">'+(t==='all'?'All':t[0].toUpperCase()+t.slice(1))+'</span>';});
+  ['all'].concat(PTAGS).forEach(function(t){h+='<span class="ft '+(activeF===t?'on':'')+'" data-f="'+t+'">'+(t==='all'?'All':t[0].toUpperCase()+t.slice(1))+'</span>';if(t==='all')h+='<span class="ft fav-ft '+(activeF==='favs'?'on':'')+'" data-f="favs" title="Favorites">'+cynSvg(16,16)+' Favs</span>';});
   if(curTab==='dinner'){h+='<span class="ft '+(ipFilter==='ip'?'ip':'')+'" data-ip="ip" style="margin-left:2px">\ud83c\udf72 IP</span><span class="ft '+(ipFilter==='noip'?'on':'')+'" data-ip="noip">\ud83c\udf73 Skillet</span>';}
   el.innerHTML=h;
   el.querySelectorAll('[data-f]').forEach(function(s){s.addEventListener('click',function(){activeF=this.dataset.f;renderF();renderLib();});});
@@ -408,15 +448,16 @@ function renderF(){
 function renderLib(){
   var q=$('search').value.toLowerCase();
   var pool=curTab==='dinner'?DINNERS:curTab==='lunch'?LUNCHES:SMOOTHIES;
-  var fl=pool.filter(function(m){var ms=!q||m.name.toLowerCase().indexOf(q)>-1||m.desc.toLowerCase().indexOf(q)>-1||m.tags.some(function(t){return t.indexOf(q)>-1;})||m.ing.some(function(i){return i.n.toLowerCase().indexOf(q)>-1;});var mf=activeF==='all'||m.tags.indexOf(activeF)>-1;var mi=ipFilter==='all'||(ipFilter==='ip'&&m.ip)||(ipFilter==='noip'&&!m.ip);return ms&&mf&&mi;});
+  var fl=pool.filter(function(m){var ms=!q||m.name.toLowerCase().indexOf(q)>-1||m.desc.toLowerCase().indexOf(q)>-1||m.tags.some(function(t){return t.indexOf(q)>-1;})||m.ing.some(function(i){return i.n.toLowerCase().indexOf(q)>-1;});var mf=activeF==='all'||(activeF==='favs'?!!favorites[m.id]:m.tags.indexOf(activeF)>-1);var mi=ipFilter==='all'||(ipFilter==='ip'&&m.ip)||(ipFilter==='noip'&&!m.ip);return ms&&mf&&mi;});
   var el=$('mlist');
-  el.innerHTML=fl.map(function(m){var tag=m.type==='smoothie'?'<span class="ch c-sk">Blender</span>':m.ip?'<span class="ch c-ip">Instant Pot</span>':'<span class="ch c-sk">Stovetop</span>';return '<div class="mc '+(selId===m.id?'sel':'')+'" data-id="'+m.id+'"><div class="mn">'+m.name+'</div><div class="md">'+m.desc+'</div><div class="mm"><span class="ch c-t">'+m.time+'m</span><span class="ch c-c">'+m.cal+' cal</span><span class="ch c-p">'+m.pro+'g pro</span>'+tag+'<button class="rb" data-r="'+m.id+'">\ud83d\udcd6</button></div></div>';}).join('');
-  el.querySelectorAll('.mc').forEach(function(c){c.addEventListener('click',function(e){if(e.target.classList.contains('rb'))return;selMeal(parseInt(this.dataset.id));});c.setAttribute('draggable','true');c.addEventListener('dragstart',function(e){window._did=parseInt(this.dataset.id);e.dataTransfer.effectAllowed='copy';});});
+  el.innerHTML=fl.map(function(m){var tag=m.type==='smoothie'?'<span class="ch c-sk">Blend</span>':m.ip?'<span class="ch c-ip">IP</span>':'<span class="ch c-sk">Stove</span>';return '<div class="mc '+(selId===m.id?'sel':'')+'" data-id="'+m.id+'"><div class="mn">'+m.name+'</div><div class="md">'+m.desc+'</div><div class="mm"><span class="ch c-t">'+m.time+'m</span><span class="ch c-c">'+m.cal+' cal</span><span class="ch c-p">'+m.pro+'g pro</span>'+tag+'<button class="rb" data-r="'+m.id+'">\ud83d\udcd6</button><button class="fb'+(favorites[m.id]?' faved':'')+'" data-fav="'+m.id+'" title="Favorite">'+cynSvg(13,13)+'</button></div></div>';}).join('');
+  el.querySelectorAll('.mc').forEach(function(c){c.addEventListener('click',function(e){if(e.target.classList.contains('rb')||e.target.closest('.fb'))return;selMeal(parseInt(this.dataset.id));});c.setAttribute('draggable','true');c.addEventListener('dragstart',function(e){window._did=parseInt(this.dataset.id);e.dataTransfer.effectAllowed='copy';});});
   el.querySelectorAll('.rb').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();showR(parseInt(this.dataset.r));});});
+  el.querySelectorAll('.fb').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();var fid=parseInt(this.dataset.fav);if(favorites[fid])delete favorites[fid];else favorites[fid]=true;saveFavs();this.className='fb'+(favorites[fid]?' faved':'');});});
 }
 
 // ── Recipe Modal ──
-function showR(id){var m=findMeal(id);if(!m)return;modalId=id;$('r-name').textContent=m.name;$('r-desc').textContent=m.desc;var ml=m.type==='smoothie'?'Instructions':m.ip?'Instant Pot Instructions':'Stovetop Instructions';$('r-meth').textContent=ml;var tag=m.type==='smoothie'?'<span class="ch c-sk">Blender</span>':m.ip?'<span class="ch c-ip">Instant Pot</span>':'<span class="ch c-sk">Stovetop</span>';$('r-chips').innerHTML='<span class="ch c-t">'+m.time+' min</span><span class="ch c-c">'+m.cal+' cal</span><span class="ch c-p">'+m.pro+'g protein</span>'+tag;$('r-ing').innerHTML=m.ing.map(function(i){return '<div class="mii"><span class="ia">'+fA(i.a,i.u)+'</span><span>'+i.n+'</span></div>';}).join('');$('r-steps').innerHTML=m.steps.map(function(s){return '<div class="mstp">'+s+'</div>';}).join('');var btn=$('btn-r-add');var slot=m.type;var planned=m.type==='smoothie'?selSmoothie===id:DAYS.some(function(d){return plan[d][slot]===id;});btn.textContent=planned?'\u2713 Already Planned':'+ Add to Plan';btn.disabled=planned;btn.style.opacity=planned?'.5':'1';$('recipe-modal').classList.add('show');}
+function showR(id){var m=findMeal(id);if(!m)return;modalId=id;var fb=$('btn-r-fav');fb.innerHTML=cynSvg(28,28);fb.className='mfav'+(favorites[id]?' faved':'');$('r-name').textContent=m.name;$('r-desc').textContent=m.desc;var ml=m.type==='smoothie'?'Instructions':m.ip?'Instant Pot Instructions':'Stovetop Instructions';$('r-meth').textContent=ml;var tag=m.type==='smoothie'?'<span class="ch c-sk">Blender</span>':m.ip?'<span class="ch c-ip">Instant Pot</span>':'<span class="ch c-sk">Stovetop</span>';$('r-chips').innerHTML='<span class="ch c-t">'+m.time+' min</span><span class="ch c-c">'+m.cal+' cal</span><span class="ch c-p">'+m.pro+'g protein</span>'+tag;$('r-ing').innerHTML=m.ing.map(function(i){return '<div class="mii"><span class="ia">'+fA(i.a,i.u)+'</span><span>'+i.n+(i.opt?' <em class="opt-lbl">(optional)</em>':'')+'</span></div>';}).join('');$('r-steps').innerHTML=m.steps.map(function(s){return '<div class="mstp">'+s+'</div>';}).join('');var btn=$('btn-r-add');var slot=m.type;var planned=m.type==='smoothie'?selSmoothie===id:DAYS.some(function(d){return plan[d][slot]===id;});btn.textContent=planned?'\u2713 Already Planned':'+ Add to Plan';btn.disabled=planned;btn.style.opacity=planned?'.5':'1';$('recipe-modal').classList.add('show');}
 function closeModal(){$('recipe-modal').classList.remove('show');modalId=null;}
 function addFromModal(){if(!modalId)return;var m=findMeal(modalId);if(!m)return;if(m.type==='smoothie'){selSmoothie=m.id;checks={};save();renderSmoothie();renderGroc();closeModal();return;}var slot=m.type;var day=null;for(var i=0;i<DAYS.length;i++){if(!plan[DAYS[i]][slot]){day=DAYS[i];break;}}if(!day){alert('All '+slot+' slots full!');return;}plan[day][slot]=modalId;checks={};save();renderPlan();renderGroc();closeModal();}
 
@@ -424,9 +465,13 @@ function addFromModal(){if(!modalId)return;var m=findMeal(modalId);if(!m)return;
 function showSauces(){$('sauce-list').innerHTML=SAUCES.map(function(s){return '<div class="sauce-card"><h4>'+s.name+'</h4><div class="si"><strong>Ingredients:</strong> '+s.ing+'</div><div class="sh"><strong>How:</strong> '+s.how+'</div></div>';}).join('');$('sauce-modal').classList.add('show');}
 
 // ── Smart Fill ──
-function showSF(){$('sf-opts').innerHTML=CUISINES.map(function(c){return '<button class="sf-btn" data-cu="'+c.val+'">'+c.label+'</button>';}).join('');$('sf-opts').querySelectorAll('.sf-btn').forEach(function(b){b.addEventListener('click',function(){doSF(this.dataset.cu);$('sf-modal').classList.remove('show');});});$('sf-modal').classList.add('show');}
+function showSF(){$('sf-opts').innerHTML=CUISINES.map(function(c){var ico=c.icon==='cyn'?'<span style="display:inline-flex;align-items:center;vertical-align:middle;margin-right:.25rem">'+cynSvg(14,14)+'</span>':'';return '<button class="sf-btn" data-cu="'+c.val+'">'+ico+c.label+'</button>';}).join('');$('sf-opts').querySelectorAll('.sf-btn').forEach(function(b){b.addEventListener('click',function(){doSF(this.dataset.cu);$('sf-modal').classList.remove('show');});});$('sf-modal').classList.add('show');}
+var ASIAN_TAGS=['asian','japanese','korean','thai'];
 function doSF(cuisine){
-  ['lunch','dinner'].forEach(function(slot){var pool=slot==='lunch'?LUNCHES:DINNERS;if(cuisine!=='overlap'){pool=pool.filter(function(m){return m.tags.indexOf(cuisine)>-1;});}var empty=DAYS.filter(function(d){return !plan[d][slot];});var used={};DAYS.forEach(function(d){if(plan[d][slot])used[plan[d][slot]]=true;});for(var i=0;i<empty.length;i++){var day=empty[i];var curIng={};DAYS.forEach(function(d){['lunch','dinner'].forEach(function(s){if(plan[d][s]){var m2=findMeal(plan[d][s]);if(m2)m2.ing.forEach(function(ig){curIng[ig.n]=true;});}});});var avail=pool.filter(function(m){return !used[m.id];});if(!avail.length)break;var scored=avail.map(function(m){var ov=m.ing.filter(function(ig){return curIng[ig.n];}).length;return{m:m,sc:ov/m.ing.length+Math.random()*.2};}).sort(function(a,b){return b.sc-a.sc;});var pick=scored[Math.floor(Math.random()*Math.min(3,scored.length))].m;plan[day][slot]=pick.id;used[pick.id]=true;}});
+  ['lunch','dinner'].forEach(function(slot){var pool=slot==='lunch'?LUNCHES:DINNERS;
+  if(cuisine==='favs'){pool=pool.filter(function(m){return !!favorites[m.id];});}
+  else if(cuisine==='non-asian'){pool=pool.filter(function(m){return !m.tags.some(function(t){return ASIAN_TAGS.indexOf(t)>-1;});});}
+  else if(cuisine!=='overlap'){pool=pool.filter(function(m){return m.tags.indexOf(cuisine)>-1;});}var empty=DAYS.filter(function(d){return !plan[d][slot];});var used={};DAYS.forEach(function(d){if(plan[d][slot])used[plan[d][slot]]=true;});for(var i=0;i<empty.length;i++){var day=empty[i];var curIng={};DAYS.forEach(function(d){['lunch','dinner'].forEach(function(s){if(plan[d][s]){var m2=findMeal(plan[d][s]);if(m2)m2.ing.forEach(function(ig){curIng[ig.n]=true;});}});});var avail=pool.filter(function(m){return !used[m.id];});if(!avail.length)break;var scored=avail.map(function(m){var ov=m.ing.filter(function(ig){return curIng[ig.n];}).length;return{m:m,sc:ov/m.ing.length+Math.random()*.2};}).sort(function(a,b){return b.sc-a.sc;});var pick=scored[Math.floor(Math.random()*Math.min(3,scored.length))].m;plan[day][slot]=pick.id;used[pick.id]=true;}});
   checks={};save();renderPlan();renderGroc();
 }
 
@@ -480,14 +525,14 @@ function renderGroc(){
   var shops=shopFreq===2?[{label:'Shop 1 (Mon\u2013Wed)',days:['Mon','Tue','Wed']},{label:'Shop 2 (Thu\u2013Sun)',days:['Thu','Fri','Sat','Sun']}]:[{label:null,days:DAYS}];
   var html='',totalItems=0;
   shops.forEach(function(shop){
-    var agg={};function add(n,a,u,c){var k=n.toLowerCase();if(!agg[k])agg[k]={name:n,amt:0,unit:u,cat:c};agg[k].amt+=a;}
-    if(selSmoothie){var sm=findMeal(selSmoothie);if(sm){var mult=shop.days.length;sm.ing.forEach(function(ig){add(ig.n,ig.a*mult,ig.u,ig.c);});if(addProtein)add('protein powder',mult,'scoops','pantry');}}
-    shop.days.forEach(function(d){dayMeals[d].forEach(function(m){m.ing.forEach(function(ig){add(ig.n,ig.a,ig.u,ig.c);});});});
+    var agg={};function add(n,a,u,c,opt){var k=n.toLowerCase();if(!agg[k])agg[k]={name:n,amt:0,unit:u,cat:c,opt:!!opt};agg[k].amt+=a;}
+    if(selSmoothie){var sm=findMeal(selSmoothie);if(sm){var mult=shop.days.length;sm.ing.forEach(function(ig){add(ig.n,ig.a*mult,ig.u,ig.c,ig.opt);});if(addProtein)add('protein powder',mult,'scoops','pantry');}}
+    shop.days.forEach(function(d){dayMeals[d].forEach(function(m){m.ing.forEach(function(ig){add(ig.n,ig.a,ig.u,ig.c,ig.opt);});});});
     var cats=[{k:'protein',l:'Protein',i:'\ud83e\udd69'},{k:'produce',l:'Produce',i:'\ud83e\udd2c'},{k:'dairy',l:'Dairy',i:'\ud83e\uddc0'},{k:'grains',l:'Grains',i:'\ud83c\udf3e'},{k:'frozen',l:'Frozen',i:'\ud83e\uddca'},{k:'fermented',l:'Fermented',i:'\ud83e\uded9'},{k:'pantry',l:'Pantry (check stock)',i:'\ud83e\uded2'}];
     var groups={};Object.keys(agg).forEach(function(k){var it=agg[k];if(!groups[it.cat])groups[it.cat]=[];groups[it.cat].push(it);});
     var count=Object.keys(agg).length;totalItems+=count;
     if(shop.label)html+='<div class="shop-hdr">'+shop.label+' \u2014 '+count+' items</div>';
-    cats.forEach(function(cat){var items=groups[cat.k];if(!items||!items.length)return;items.sort(function(a,b){return a.name.localeCompare(b.name);});html+='<div class="gc"><div class="gch">'+cat.i+' '+cat.l+'</div>';items.forEach(function(item){var k=item.name.toLowerCase();var chk=checks[k]||false;html+='<div class="gi '+(chk?'ck':'')+'"><input type="checkbox" data-ck="'+k.replace(/'/g,"\\'")+'" '+(chk?'checked':'')+'><span>'+item.name+'</span><span class="at">'+fA(item.amt,item.unit)+'</span></div>';});html+='</div>';});
+    cats.forEach(function(cat){var items=groups[cat.k];if(!items||!items.length)return;items.sort(function(a,b){return a.name.localeCompare(b.name);});html+='<div class="gc"><div class="gch">'+cat.i+' '+cat.l+'</div>';items.forEach(function(item){var k=item.name.toLowerCase();var chk=checks[k]||false;html+='<div class="gi '+(chk?'ck':'')+'"><input type="checkbox" data-ck="'+k.replace(/'/g,"\\'")+'" '+(chk?'checked':'')+'><span>'+item.name+(item.opt?' <em class="opt-lbl">(opt)</em>':'')+'</span><span class="at">'+fA(item.amt,item.unit)+'</span></div>';});html+='</div>';});
   });
   var summary='<div class="gs"><span>'+planned.length+' meals'+(selSmoothie?' + smoothie':'')+'</span><span>'+totalItems+' items</span></div>';
   el.innerHTML=summary+html;$('gct').textContent=totalItems;
@@ -498,6 +543,93 @@ function renderGroc(){
 function renderMobile(){
   $('mobile-tabs').innerHTML='<button class="mtb on" data-p="lib">\ud83c\udf7d Meals</button><button class="mtb" data-p="plan">\ud83d\udcc5 Plan</button><button class="mtb" data-p="groc">\ud83d\uded2 List</button>';
   $('mobile-tabs').querySelectorAll('.mtb').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('ap');});$('p-'+this.dataset.p).classList.add('ap');$('mobile-tabs').querySelectorAll('.mtb').forEach(function(t){t.classList.remove('on');});this.classList.add('on');});});
+}
+
+// ── Add Recipe ──
+function parseIngredients(text){
+  return text.split('\n').map(function(l){return l.trim();}).filter(Boolean).map(function(line){
+    var m=line.match(/^(\d+(?:\.\d+)?)\s+([a-zA-Z]+)\s+(.+)$/);
+    if(m)return{n:m[3].trim(),a:parseFloat(m[1]),u:m[2].toLowerCase(),c:'pantry'};
+    var m2=line.match(/^(\d+(?:\.\d+)?)\s+(.+)$/);
+    if(m2)return{n:m2[2].trim(),a:parseFloat(m2[1]),u:'',c:'pantry'};
+    return{n:line,a:1,u:'',c:'pantry'};
+  });
+}
+function parseDuration(d){if(!d)return 0;var m=d.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);if(!m)return 0;return(parseInt(m[1]||0)*60)+parseInt(m[2]||0);}
+function fetchRecipe(){
+  var url=$('ar-url').value.trim();
+  if(!url){alert('Paste a recipe URL first.');return;}
+  var btn=$('btn-ar-fetch');
+  btn.textContent='Loading…';btn.disabled=true;
+  var proxy='https://api.allorigins.win/get?url='+encodeURIComponent(url);
+  fetch(proxy).then(function(r){return r.json();}).then(function(data){
+    var doc=new DOMParser().parseFromString(data.contents,'text/html');
+    var recipe=null;
+    doc.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){
+      if(recipe)return;
+      try{
+        var j=JSON.parse(s.textContent);
+        var items=j['@graph']?j['@graph']:[j];
+        items.forEach(function(it){
+          if(recipe)return;
+          var t=it['@type'];
+          if(t==='Recipe'||(Array.isArray(t)&&t.includes('Recipe')))recipe=it;
+        });
+      }catch(e){}
+    });
+    if(!recipe){alert('No structured recipe data found on this page. Try filling in the fields manually.');btn.textContent='Generate from URL';btn.disabled=false;return;}
+    if(recipe.name)$('ar-name').value=recipe.name;
+    if(recipe.description)$('ar-desc').value=recipe.description.replace(/<[^>]+>/g,'').slice(0,120);
+    var total=parseDuration(recipe.totalTime)||(parseDuration(recipe.prepTime)+parseDuration(recipe.cookTime));
+    if(total)$('ar-time').value=total;
+    if(recipe.nutrition){
+      if(recipe.nutrition.calories){var c=String(recipe.nutrition.calories).replace(/[^\d]/g,'');if(c)$('ar-cal').value=c;}
+      if(recipe.nutrition.proteinContent){var p=String(recipe.nutrition.proteinContent).replace(/[^\d]/g,'');if(p)$('ar-pro').value=p;}
+    }
+    if(recipe.recipeIngredient&&recipe.recipeIngredient.length)$('ar-ing').value=recipe.recipeIngredient.join('\n');
+    if(recipe.recipeInstructions&&recipe.recipeInstructions.length){
+      var steps=recipe.recipeInstructions.map(function(s){
+        if(typeof s==='string')return s.replace(/<[^>]+>/g,'').trim();
+        if(s['@type']==='HowToSection'&&s.itemListElement)return s.itemListElement.map(function(sub){return(sub.text||'').replace(/<[^>]+>/g,'').trim();}).join(' ');
+        return(s.text||s.name||'').replace(/<[^>]+>/g,'').trim();
+      }).filter(Boolean);
+      $('ar-steps').value=steps.join('\n');
+    }
+    var nameDesc=((recipe.name||'')+' '+(recipe.description||'')+' '+($('ar-ing').value||'')).toLowerCase();
+    if(/smoothie|shake|blend/.test(nameDesc))$('ar-type').value='smoothie';
+    else if(/salad|sandwich|wrap|soup|bowl/.test(nameDesc))$('ar-type').value='lunch';
+    else $('ar-type').value='dinner';
+    btn.textContent='Generate from URL';btn.disabled=false;
+  }).catch(function(){alert('Could not fetch the URL. Check the link and try again.');btn.textContent='Generate from URL';btn.disabled=false;});
+}
+function showAddRecipe(){
+  $('ar-name').value='';$('ar-url').value='';$('ar-desc').value='';
+  $('ar-ing').value='';$('ar-steps').value='';
+  $('ar-time').value=15;$('ar-cal').value=400;$('ar-pro').value=20;
+  $('add-recipe-modal').classList.add('show');
+}
+function saveCustomRecipe(){
+  var name=$('ar-name').value.trim();
+  if(!name){alert('Please enter a recipe name.');return;}
+  var type=$('ar-type').value;
+  var time=parseInt($('ar-time').value)||15;
+  var cal=parseInt($('ar-cal').value)||400;
+  var pro=parseInt($('ar-pro').value)||20;
+  var desc=$('ar-desc').value.trim();
+  var url=$('ar-url').value.trim();
+  var ing=parseIngredients($('ar-ing').value);
+  var steps=$('ar-steps').value.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  var maxId=0;ALL.forEach(function(m){if(m.id>maxId)maxId=m.id;});
+  var recipe={id:maxId+1,name:name,desc:desc||ing.map(function(i){return i.n;}).slice(0,4).join(', '),
+    time:time,cal:cal,pro:pro,type:type,ip:false,tags:[type],url:url,ing:ing,steps:steps};
+  ALL.push(recipe);
+  if(type==='smoothie')SMOOTHIES.push(recipe);
+  else if(type==='lunch')LUNCHES.push(recipe);
+  else DINNERS.push(recipe);
+  try{var cr=JSON.parse(localStorage.getItem('mp6custom')||'[]');cr.push(recipe);localStorage.setItem('mp6custom',JSON.stringify(cr));}catch(e){}
+  $('add-recipe-modal').classList.remove('show');
+  curTab=type;renderTabs();renderF();renderLib();
+  if(type==='smoothie')renderSmoothie();
 }
 
 // ── Header button events ──
@@ -515,8 +647,14 @@ $('btn-print').addEventListener('click',function(){
 });
 
 $('btn-sf').addEventListener('click',function(){showSF();});
+$('btn-add-recipe').addEventListener('click',function(){showAddRecipe();});
+$('btn-ar-close').addEventListener('click',function(){$('add-recipe-modal').classList.remove('show');});
+$('btn-ar-fetch').addEventListener('click',function(){fetchRecipe();});
+$('btn-ar-save').addEventListener('click',function(){saveCustomRecipe();});
+$('add-recipe-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
 $('btn-sauce').addEventListener('click',function(){showSauces();});
 $('btn-recipe-close').addEventListener('click',function(){closeModal();});
+$('btn-r-fav').addEventListener('click',function(){if(!modalId)return;if(favorites[modalId])delete favorites[modalId];else favorites[modalId]=true;saveFavs();this.className='mfav'+(favorites[modalId]?' faved':'');renderLib();});
 $('btn-sauce-close').addEventListener('click',function(){$('sauce-modal').classList.remove('show');});
 $('btn-sf-close').addEventListener('click',function(){$('sf-modal').classList.remove('show');});
 $('btn-cancel-sel').addEventListener('click',function(){cancelSel();});
