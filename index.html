@@ -66,7 +66,8 @@ header h1 span{opacity:.6;font-weight:300}
 .slot.drag-over{background:var(--gl)}
 .slot-lbl{font-size:.48rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--tm);margin-bottom:.1rem}
 .slot-empty{display:flex;align-items:center;justify-content:center;height:28px;border:1px dashed var(--bd);border-radius:var(--rs);color:var(--tm);font-size:.6rem;opacity:.5}
-.slot-meal{border-radius:var(--rs);padding:.2rem .35rem;font-size:.62rem;font-weight:500;position:relative;line-height:1.2;cursor:pointer}
+.slot-meal{border-radius:var(--rs);padding:.2rem .35rem;font-size:.62rem;font-weight:500;position:relative;line-height:1.2;cursor:grab}
+.slot-meal:active{cursor:grabbing}
 .slot-meal.dinner{background:var(--gl);border:1px solid #C1D9C8;color:var(--gd)}
 .slot-meal.lunch{background:var(--al);border:1px solid #E0D0A8;color:#8B6B1A}
 .slot-meal .rm{position:absolute;top:0;right:2px;background:none;border:none;color:var(--rd);cursor:pointer;font-size:.76rem;line-height:1;opacity:0;transition:opacity .12s}
@@ -113,10 +114,6 @@ header h1 span{opacity:.6;font-weight:300}
 .mstp::before{content:counter(step);position:absolute;left:0;top:.25rem;width:1.15rem;height:1.15rem;border-radius:99px;background:var(--gl);color:var(--gn);font-size:.58rem;font-weight:600;display:flex;align-items:center;justify-content:center}
 .mab{width:100%;padding:.42rem;background:var(--gn);color:#fff;border:none;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;margin-top:.3rem}
 .mab:hover{background:var(--gd)}
-.sauce-card{background:var(--bg);border:1px solid var(--bl);border-radius:var(--rs);padding:.45rem .55rem;margin-bottom:.3rem}
-.sauce-card h4{font-family:'Fraunces',serif;font-weight:500;font-size:.8rem;margin-bottom:.12rem}
-.sauce-card .si,.sauce-card .sh{font-size:.68rem;color:var(--ts);margin-bottom:.1rem}
-.sauce-card .sh{font-style:italic}
 .sf-opt{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.4rem}
 .sf-btn{padding:.35rem .7rem;border:1px solid var(--bd);border-radius:var(--rs);background:var(--sf);color:var(--ts);font-family:'Outfit',sans-serif;font-size:.74rem;font-weight:500;cursor:pointer}
 .sf-btn:hover{border-color:var(--gn);color:var(--gn)}
@@ -133,11 +130,6 @@ header h1 span{opacity:.6;font-weight:300}
 .r-notes-ta{width:100%;border:none;outline:none;resize:vertical;font:inherit;font-size:.88rem;background:transparent;color:inherit;min-height:2.5rem;}
 .mfav:hover{opacity:.7;}.mfav.faved{opacity:1;border:1px solid var(--bd);border-radius:var(--rs);}
 .fav-ft{display:inline-flex;align-items:center;gap:.25rem;}
-.ar-field{margin-bottom:.5rem}.ar-field>label{display:block;font-size:.68rem;font-weight:600;color:var(--ts);margin-bottom:.18rem}
-.ar-input{width:100%;padding:.35rem .5rem;border:1px solid var(--bd);border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.74rem;background:var(--bg);color:var(--tx);outline:none}
-.ar-input:focus{border-color:var(--gn)}.ar-ta{resize:vertical;min-height:80px}
-.ar-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.4rem}
-.ar-url-row{display:flex;gap:.4rem}.ar-url-row .ar-input{flex:1}
 .ar-fetch-btn{white-space:nowrap;padding:.35rem .65rem;background:var(--gn);color:#fff;border:none;border-radius:var(--rs);font-family:'Outfit',sans-serif;font-size:.7rem;font-weight:600;cursor:pointer}
 .ar-fetch-btn:hover{background:var(--gd)}.ar-fetch-btn:disabled{opacity:.55;cursor:not-allowed}
 .mt{display:none;background:var(--sf);border-top:1px solid var(--bd);position:fixed;bottom:0;left:0;right:0;z-index:100}
@@ -171,10 +163,7 @@ if(FB_ON){try{firebase.initializeApp(FB_CFG);}catch(e){FB_ON=false;console.error
   <h1>Meal Planner <span>& Groceries</span></h1>
   <div class="hb">
     <button class="hbtn" id="btn-sf">Smart Fill</button>
-    <button class="hbtn" id="btn-add-recipe">Add Recipe</button>
     <button class="hbtn" id="btn-copy-plan">Copy Plan</button>
-    <button class="hbtn" id="btn-paste-plan">Paste Plan</button>
-    <button class="hbtn" id="btn-sauce">Sauces</button>
     <button class="hbtn" id="btn-print">Print</button>
     <button class="hbtn dng" id="btn-clear">Clear</button>
     <span id="fb-user"></span>
@@ -203,40 +192,11 @@ if(FB_ON){try{firebase.initializeApp(FB_CFG);}catch(e){FB_ON=false;console.error
 <div class="mt" id="mobile-tabs"></div>
 <div class="sb2" id="sb2"><span id="stxt"></span><button class="cb2" id="btn-cancel-sel">✕</button></div>
 <div class="mo" id="recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-recipe-close">✕</button><button class="mfav" id="btn-r-fav" title="Favorite"></button><h2 id="r-name"></h2><div class="mds" id="r-desc"></div><div class="mch" id="r-chips"></div></div><div class="mb"><div class="msc"><h3>Ingredients</h3><div class="mig" id="r-ing"></div></div><div class="msc"><h3 id="r-meth">Instructions</h3><div class="mst" id="r-steps"></div></div><div class="r-notes-wrap"><div class="r-notes-cyn" id="r-notes-cyn"></div><div class="r-notes-bubble"><textarea id="r-notes" class="r-notes-ta" placeholder="Add cooking notes..." rows="2"></textarea></div></div><button class="mab" id="btn-r-add">+ Add to Plan</button></div></div></div>
-<div class="mo" id="sauce-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sauce-close">✕</button><h2>Sauces & Dressings</h2><div class="mds">Blueprint-friendly. All use olive oil — no seed oils.</div></div><div class="mb" id="sauce-list"></div></div></div>
 <div class="mo" id="sf-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-sf-close">✕</button><h2>Smart Fill</h2><div class="mds">Auto-fill empty slots by style:</div></div><div class="mb"><div class="sf-opt" id="sf-opts"></div></div></div></div>
-<div class="mo" id="paste-plan-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-pp-close">✕</button><h2>Paste Plan</h2><div class="mds">Paste a copied plan below and click Load — it will fill your week.</div></div><div class="mb"><div class="ar-field"><textarea id="pp-text" class="ar-input ar-ta" rows="12" placeholder="=== MEAL PLAN FOR THE WEEK ===&#10;&#10;Daily Smoothie: Shingo's Smoothie&#10;&#10;MON&#10;  Lunch:  Greek Chicken Salad&#10;  Dinner: Chicken Fajitas&#10;..."></textarea></div><button class="mab" id="btn-pp-load">Load Plan</button></div></div></div>
-<div class="mo" id="add-recipe-modal"><div class="mdl"><div class="mh"><button class="mx" id="btn-ar-close">✕</button><h2>Add Recipe</h2><div class="mds">Fill in the fields below to add a new recipe.</div></div><div class="mb">
-  <div class="ar-field"><label>Name *</label><input type="text" id="ar-name" class="ar-input" placeholder="Recipe name"></div>
-  <div class="ar-row">
-    <div class="ar-field"><label>Type</label><select id="ar-type" class="ar-input"><option value="smoothie">Smoothie</option><option value="lunch" selected>Lunch</option><option value="dinner">Dinner</option></select></div>
-    <div class="ar-field"><label>Time (min)</label><input type="number" id="ar-time" class="ar-input" value="15" min="1"></div>
-    <div class="ar-field"><label>Calories</label><input type="number" id="ar-cal" class="ar-input" value="400" min="0"></div>
-    <div class="ar-field"><label>Protein (g)</label><input type="number" id="ar-pro" class="ar-input" value="20" min="0"></div>
-  </div>
-  <div class="ar-field"><label>Short description</label><input type="text" id="ar-desc" class="ar-input" placeholder="e.g. romaine, cucumber, chicken"></div>
-  <div class="ar-field"><label>Ingredients (one per line — e.g. "1 cup kefir" or "banana")</label><textarea id="ar-ing" class="ar-input ar-ta" rows="5" placeholder="1 cup kefir&#10;1 banana&#10;1 cup frozen berries"></textarea></div>
-  <div class="ar-field"><label>Steps (one per line)</label><textarea id="ar-steps" class="ar-input ar-ta" rows="4" placeholder="Add kefir to blender.&#10;Add fruits.&#10;Blend 45 seconds."></textarea></div>
-  <button class="mab" id="btn-ar-save">+ Add Recipe</button>
-</div></div></div>
 
 <script>
 (function(){
 "use strict";
-
-/* ═══ SAUCES ═══ */
-var SAUCES=[
-{name:"Lemon Olive Oil Vinaigrette",ing:"3 tbsp olive oil, 1 tbsp lemon juice, 1 tsp Dijon mustard, 1 minced garlic clove, salt & pepper",how:"Whisk everything or shake in a jar. The workhorse dressing — use on any salad. Keeps 1 week."},
-{name:"Tahini Dressing",ing:"2 tbsp tahini, 1 tbsp lemon juice, 1 tbsp water, 1 garlic clove (minced), pinch cumin, salt",how:"Whisk tahini with lemon and water until smooth. Great on grain bowls and Mediterranean salads."},
-{name:"Asian Sesame Dressing",ing:"1 tbsp soy sauce, 1 tbsp rice vinegar, 1 tsp sesame oil, 1 tsp olive oil, 1 tsp grated ginger, pinch chili flakes",how:"Whisk all together. Perfect on Asian salads with cabbage and carrots."},
-{name:"Balsamic Vinaigrette",ing:"3 tbsp olive oil, 1 tbsp balsamic vinegar, 1 tsp Dijon mustard, salt & pepper",how:"Whisk or shake. Classic on mixed greens, tomato salads, and caprese bowls."},
-{name:"Cilantro Lime Dressing",ing:"2 tbsp olive oil, juice of 1 lime, 1/4 cup cilantro, 1 garlic clove, pinch cumin, salt",how:"Blend until smooth. Thin with water if needed. Best on Mexican-style salads."},
-{name:"Greek Yogurt Ranch",ing:"1/4 cup Greek yogurt, 1 tbsp olive oil, 1 tbsp lemon juice, 1 tsp dill, 1/2 tsp garlic powder, 1/2 tsp onion powder, salt",how:"Stir together. Thin with water. High-protein dressing — keeps 5 days."},
-{name:"Gochujang Dressing",ing:"1 tbsp gochujang, 1 tbsp rice vinegar, 1 tsp sesame oil, 1 tsp soy sauce, 1 tsp olive oil, splash water",how:"Whisk until smooth. Spicy and sweet — ideal on Korean bowls."},
-{name:"Peanut Sauce",ing:"2 tbsp peanut butter, 1 tbsp soy sauce, 1 tbsp lime juice, 1 tsp sesame oil, 1 tsp ginger, splash water",how:"Whisk PB with soy and lime. Add water until pourable. Great on Thai salads."},
-{name:"Harissa Vinaigrette",ing:"2 tbsp olive oil, 1 tbsp harissa paste, 1 tbsp lemon juice, 1 garlic clove, salt",how:"Whisk together. Smoky and spicy — great on roasted veg salads and grain bowls."},
-{name:"Miso Ginger Dressing",ing:"1 tbsp miso paste, 1 tbsp rice vinegar, 1 tsp sesame oil, 1 tsp olive oil, 1 tsp ginger, splash water",how:"Whisk miso with vinegar until dissolved. Umami-rich — great on salmon salads."}
-];
 
 /* ═══ SMOOTHIES ═══ */
 var SMOOTHIES=[
@@ -319,17 +279,17 @@ var DINNERS=[
   ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"garam masala",a:2,u:"tsp",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"coconut cream",a:0.5,u:"cup",c:"pantry"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
   steps:["Saut\u00e9: olive oil, diced onion 3 min. Add garlic, ginger 1 min.","Add garam masala, cumin, turmeric 30s. Add tomatoes and chicken chunks.","Seal, Pressure Cook HIGH 10 min. Cook rice on stove.","Quick Release. Stir in coconut cream. Serve over rice with cilantro."]},
 {id:2,name:"Chicken Fajitas",desc:"peppers, onions, cherry tomato, lime, tortillas, salsa",time:35,cal:560,pro:38,type:"dinner",ip:true,tags:["chicken","mexican"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"chicken stock",a:0.25,u:"cup",c:"pantry"},{n:"cherry tomatoes",a:1,u:"cup",c:"produce"},{n:"lime",a:2,u:"",c:"produce"},{n:"brown rice",a:1,u:"cup",c:"grains"},{n:"corn tortillas",a:8,u:"",c:"grains"},{n:"salsa",a:1,u:"cup",c:"pantry"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"}],
-  steps:["Saut\u00e9: olive oil, sliced onion & peppers 3 min. Add garlic, cumin, chili 30s.","Add whole chicken, lime juice, chicken stock, and whole cherry tomatoes. Seal, HIGH 8 min.","Quick Release. Remove chicken and shred; pour the leftover cooking liquid into a measuring cup and reserve.","Toast rice in the IP 1-2 min, then add the reserved liquid (plus water to reach 1.5 cups total). Seal, HIGH 4 min, Natural Release 10 min.","Return shredded chicken to the pot, toss with juices.","Serve in warm tortillas with the rice, salsa, avocado, and cilantro."]},
+  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1.5,u:"",c:"produce"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"chicken stock",a:0.25,u:"cup",c:"pantry"},{n:"cherry tomatoes",a:1,u:"cup",c:"produce"},{n:"lime",a:3,u:"",c:"produce"},{n:"brown rice",a:1,u:"cup",c:"grains"},{n:"corn tortillas",a:8,u:"",c:"grains"},{n:"avocado",a:2,u:"",c:"produce"},{n:"cilantro",a:0.5,u:"cup",c:"produce"},{n:"tomatoes",a:2,u:"",c:"produce"}],
+  steps:["Saut\u00e9: olive oil, sliced onion & peppers 3 min. Add garlic, cumin, chili 30s.","Add whole chicken, lime juice, chicken stock, and whole cherry tomatoes. Seal, HIGH 8 min.","Quick Release. Remove chicken and shred; pour the leftover cooking liquid into a measuring cup and reserve.","Toast rice in the IP 1-2 min, then add the reserved liquid (plus water to reach 1.5 cups total). Seal, HIGH 4 min, Natural Release 10 min.","Pico de gallo & guacamole: dice tomatoes and onion, mix with chopped cilantro, lime juice, and salt. Add mashed avocado to make it guacamole.","Serve in warm tortillas with rice, guacamole, and pico de gallo."]},
 {id:3,name:"Chicken & Broccoli",desc:"garlic ginger sauce, rice, sesame",time:25,cal:470,pro:40,type:"dinner",ip:true,tags:["chicken","asian"],
   ing:[{n:"chicken breast",a:1.5,u:"lb",c:"protein"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"broccoli",a:4,u:"cups",c:"produce"},{n:"scallions",a:3,u:"",c:"produce"},{n:"sesame seeds",a:1,u:"tbsp",c:"pantry"}],
   steps:["IP: chicken + soy sauce + sesame oil + garlic + ginger + 1/2 cup water. Seal, HIGH 8 min.","Cook rice. Steam broccoli 3 min. Quick Release. Slice chicken.","Saut\u00e9 to reduce sauce 2-3 min. Serve over rice with broccoli, scallions, sesame."]},
 {id:4,name:"Chicken Tikka Bowl",desc:"yogurt-spiced, rice, cauliflower",time:30,cal:480,pro:36,type:"dinner",ip:true,tags:["chicken","indian"],
   ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"curry paste",a:2,u:"tbsp",c:"pantry"},{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"canned tomatoes",a:7,u:"oz",c:"pantry"},{n:"cauliflower",a:3,u:"cups",c:"produce"},{n:"brown rice",a:1.5,u:"cups",c:"grains"},{n:"yogurt",a:0.5,u:"cup",c:"dairy"},{n:"spinach",a:2,u:"cups",c:"produce"}],
   steps:["Saut\u00e9: olive oil, garlic, ginger, curry paste 1 min. Add cubed chicken, tomatoes, cauliflower.","Seal, HIGH 10 min. Cook rice. Quick Release.","Stir in yogurt and spinach until wilted. Serve over rice."]},
-{id:5,name:"Shingo's Chicken Shawarma Bowl",desc:"quinoa, cherry tomato, feta, cucumber yogurt sauce",time:25,cal:470,pro:36,type:"dinner",ip:false,tags:["chicken","middle-eastern"],
-  ing:[{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:1,u:"",c:"produce"},{n:"quinoa",a:1,u:"cup",c:"grains"},{n:"cherry tomatoes",a:1,u:"cup",c:"produce"},{n:"feta cheese",a:0.5,u:"cup",c:"dairy"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"plain yogurt",a:0.5,u:"cup",c:"dairy"},{n:"fresh dill",a:1,u:"tbsp",c:"produce"}],
-  steps:["Rub chicken with cumin, turmeric, minced garlic, olive oil, and lemon juice. Cook in a hot pan over medium-high heat, 5–6 min per side until cooked through. Slice.","Cook quinoa according to package directions.","Make sauce: mix diced cucumber, yogurt, chopped dill, and a squeeze of lemon. Build bowls: quinoa, sliced chicken, halved cherry tomatoes, crumbled feta, and cucumber yogurt sauce."]},
+{id:5,name:"Shingo's Chicken Shawarma Bowl",desc:"quinoa, cherry tomato, feta, cucumber yogurt sauce",time:25,cal:470,pro:36,type:"dinner",ip:true,tags:["chicken","middle-eastern"],
+  ing:[{n:"chicken thighs",a:1.5,u:"lb",c:"protein"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"turmeric",a:0.5,u:"tsp",c:"pantry"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"lemon",a:1,u:"",c:"produce"},{n:"quinoa",a:1,u:"cup",c:"grains"},{n:"chicken broth",a:1.25,u:"cups",c:"pantry"},{n:"cherry tomatoes",a:1,u:"cup",c:"produce"},{n:"feta cheese",a:0.5,u:"cup",c:"dairy"},{n:"cucumber",a:1,u:"",c:"produce"},{n:"plain yogurt",a:0.5,u:"cup",c:"dairy"},{n:"fresh dill",a:1,u:"tbsp",c:"produce"}],
+  steps:["Rinse quinoa. Add quinoa and chicken broth to IP, seal, HIGH 1 min. Natural release 10 min, then quick release. Fluff with a fork.","Rub chicken with cumin, turmeric, minced garlic, olive oil, and lemon juice. Cook in a hot pan over medium-high heat, 5–6 min per side until cooked through. Slice.","Make sauce: mix diced cucumber, yogurt, chopped dill, and a squeeze of lemon. Build bowls: quinoa, sliced chicken, halved cherry tomatoes, crumbled feta, and cucumber yogurt sauce."]},
 {id:6,name:"Chicken Tortilla Soup",desc:"tomato broth, black beans, avocado",time:25,cal:420,pro:34,type:"dinner",ip:true,tags:["chicken","mexican"],
   ing:[{n:"onion",a:1,u:"",c:"produce"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"canned tomatoes",a:14.5,u:"oz",c:"pantry"},{n:"canned black beans",a:15,u:"oz",c:"pantry"},{n:"cumin",a:1,u:"tsp",c:"pantry"},{n:"chili powder",a:1,u:"tsp",c:"pantry"},{n:"chicken breast",a:1,u:"lb",c:"protein"},{n:"lime",a:1,u:"",c:"produce"},{n:"avocado",a:1,u:"",c:"produce"},{n:"cilantro",a:0.25,u:"cup",c:"produce"},{n:"corn tortillas",a:4,u:"",c:"grains"}],
   steps:["IP: onion, garlic, tomatoes, beans, spices, 2 cups water. Chicken on top. HIGH 10 min.","Quick Release. Shred chicken, return, add lime juice.","Serve topped with avocado, cilantro, toasted tortilla strips."]},
@@ -412,19 +372,22 @@ var DINNERS=[
 {id:35,name:"Korean Beef Bowl",desc:"rice, kimchi, egg, gochujang",time:20,cal:520,pro:36,type:"dinner",ip:false,tags:["beef","korean"],
   ing:[{n:"brown rice",a:1.5,u:"cups cooked",c:"grains"},{n:"ground beef (lean)",a:1,u:"lb",c:"protein"},{n:"garlic",a:3,u:"cloves",c:"produce"},{n:"ginger",a:1,u:"tbsp",c:"produce"},{n:"soy sauce",a:3,u:"tbsp",c:"pantry"},{n:"sesame oil",a:1,u:"tsp",c:"pantry"},{n:"eggs",a:2,u:"",c:"protein"},{n:"kimchi",a:0.5,u:"cup",c:"fermented"},{n:"scallions",a:3,u:"",c:"produce"},{n:"gochujang",a:1,u:"tbsp",c:"pantry"}],
   steps:["Cook rice (or use leftover). Brown beef 4 min, add garlic, ginger, soy, sesame oil 2 min.","Fry eggs sunny-side up. Build bowls: rice, beef, kimchi, scallions, egg, gochujang drizzle."]},
-{id:37,name:"Shingo's Sausage & Pepper",desc:"apple sausage, bell pepper, onion, Italian seasoning",time:20,cal:420,pro:24,type:"dinner",ip:false,tags:["pork"],
-  ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"apple sausage",a:1,u:"lb",c:"protein"},{n:"Italian seasoning",a:1,u:"tsp",c:"pantry"},{n:"salt",a:0.5,u:"tsp",c:"pantry"},{n:"black pepper",a:0.25,u:"tsp",c:"pantry"}],
-  steps:["Heat olive oil in a large pan over medium heat. Cook sliced onion until softened, about 3–4 min.","Add sliced bell peppers and cook 3–4 min until slightly tender.","Add sliced apple sausage and Italian seasoning. Cook 5–6 min, stirring occasionally, until sausage is browned and peppers are done."]},
+{id:37,name:"Shingo's Sausage & Pepper",desc:"apple sausage, bell pepper, onion, quinoa",time:25,cal:480,pro:28,type:"dinner",ip:true,tags:["pork"],
+  ing:[{n:"quinoa",a:1,u:"cup",c:"grains"},{n:"chicken broth",a:1.25,u:"cups",c:"pantry"},{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"bell peppers",a:3,u:"",c:"produce"},{n:"apple sausage",a:1,u:"lb",c:"protein"},{n:"Italian seasoning",a:1,u:"tsp",c:"pantry"},{n:"salt",a:0.5,u:"tsp",c:"pantry"},{n:"black pepper",a:0.25,u:"tsp",c:"pantry"}],
+  steps:["Rinse quinoa. Add quinoa and chicken broth to IP, seal, HIGH 1 min. Natural release 10 min, then quick release. Fluff with a fork.","Heat olive oil in a large pan over medium heat. Cook sliced onion until softened, about 3–4 min. Add sliced bell peppers and cook 3–4 min.","Add sliced apple sausage and Italian seasoning. Cook 5–6 min until sausage is browned. Serve over quinoa."]},
 {id:38,name:"Shingo's Lasagna",desc:"mushroom, zucchini, squash, cottage cheese, cherry tomato",time:60,cal:450,pro:28,type:"dinner",ip:false,tags:["vegetarian","italian"],
   ing:[{n:"olive oil",a:1,u:"tbsp",c:"pantry"},{n:"onion",a:1,u:"",c:"produce"},{n:"large tomato",a:1,u:"",c:"produce"},{n:"mushrooms",a:16,u:"oz",c:"produce"},{n:"tomato paste",a:2,u:"tbsp",c:"pantry"},{n:"Italian seasoning",a:1.5,u:"tsp",c:"pantry"},{n:"zucchini",a:1,u:"",c:"produce"},{n:"yellow squash",a:1,u:"",c:"produce"},{n:"garlic",a:4,u:"cloves",c:"produce"},{n:"tomato sauce",a:24,u:"oz",c:"pantry"},{n:"cherry tomatoes",a:1,u:"cup",c:"produce"},{n:"lasagna sheets",a:9,u:"",c:"grains"},{n:"cottage cheese",a:16,u:"oz",c:"dairy"},{n:"mozzarella cheese",a:1,u:"cup",c:"dairy"},{n:"salt",a:0.5,u:"tsp",c:"pantry"},{n:"black pepper",a:0.25,u:"tsp",c:"pantry"}],
   steps:["Preheat oven to 375°F. Heat olive oil in a large pan over medium heat. Cook diced onion until softened, about 3–4 min. Add sliced tomato and sliced mushrooms, cook until mushrooms release their liquid, about 5–6 min.","Stir in tomato paste, Italian seasoning, diced zucchini, diced squash, and minced garlic. Cook 3–4 min. Add tomato sauce, season with salt and pepper, and simmer 5 min.","Spread a thin layer of sauce on the bottom of a 9x13 baking dish. Layer with lasagna sheets, sauce, whole cherry tomatoes, and dollops of cottage cheese. Repeat layers. Top with remaining sauce and mozzarella. Cover with foil and bake 30 min, then uncover and bake 10 min until bubbly."]},
 {id:39,name:"Shingo's Turkey Burger",desc:"turkey patty, melted cheese, microgreens, horseradish sauce",time:15,cal:430,pro:32,type:"dinner",ip:false,tags:["turkey"],
   ing:[{n:"TJ's turkey patties",a:4,u:"",c:"protein"},{n:"American cheese slices",a:4,u:"",c:"dairy"},{n:"bread",a:4,u:"slices",c:"grains"},{n:"ketchup",a:2,u:"tbsp",c:"pantry"},{n:"mayonnaise",a:2,u:"tbsp",c:"pantry"},{n:"horseradish",a:1,u:"tsp",c:"pantry"},{n:"microgreens",a:1,u:"cup",c:"produce"},{n:"tomato",a:1,u:"",c:"produce"},{n:"banana peppers",a:0.25,u:"cup",c:"produce"}],
   steps:["Cook turkey patties in a pan over medium-high heat, about 4–5 min per side until cooked through. In the last minute, top each patty with a slice of cheese and cover to melt.","Toast bread slices. Mix ketchup, mayonnaise, and horseradish to make the sauce.","Layer from bottom to top: toasted bread, sauce, patty with melted cheese, microgreens, and sliced tomato. Serve with banana peppers on the side."]},
+{id:40,name:"Shingo's Salmon & Asparagus",desc:"salmon, quinoa, asparagus, lemon herb butter",time:35,cal:520,pro:42,type:"dinner",ip:true,tags:["seafood"],
+  ing:[{n:"salmon fillets",a:2,u:"",c:"protein"},{n:"quinoa",a:1,u:"cup",c:"grains"},{n:"chicken broth",a:1.25,u:"cups",c:"pantry"},{n:"asparagus",a:1,u:"bunch",c:"produce"},{n:"olive oil",a:2,u:"tbsp",c:"pantry"},{n:"lemon juice",a:2,u:"tbsp",c:"produce"},{n:"Italian seasoning",a:1,u:"tbsp",c:"pantry"},{n:"dried parsley",a:1,u:"tsp",c:"pantry"},{n:"dried thyme",a:1,u:"tsp",c:"pantry"},{n:"dried oregano",a:1,u:"tsp",c:"pantry"},{n:"salt",a:0.5,u:"tsp",c:"pantry"},{n:"black pepper",a:0.25,u:"tsp",c:"pantry"}],
+  steps:["Rinse quinoa. Add quinoa and chicken broth to IP, seal, HIGH 1 min. Natural release 10 min, then quick release. Fluff with a fork.","Preheat oven to 400°F. Mix olive oil, lemon juice, Italian seasoning, parsley, thyme, oregano, salt, and pepper. Coat salmon generously — layer it on thick.","Place salmon and asparagus on a baking sheet, drizzle with herb mixture. Bake 10–12 min to 120–125°F internal. Rest a few min, serve over quinoa."]},
 ];
 
 var ALL=[].concat(SMOOTHIES, LUNCHES, DINNERS);
-var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var PTAGS=['chicken','beef','pork','turkey','seafood','eggs','vegetarian'];
 var CUISINES=[
   {label:'\ud83d\udd00 Best Overlap',val:'overlap'},
@@ -546,9 +509,6 @@ function showR(id){var m=findMeal(id);if(!m)return;modalId=id;var fb=$('btn-r-fa
 function closeModal(){$('recipe-modal').classList.remove('show');modalId=null;}
 function addFromModal(){if(!modalId)return;var m=findMeal(modalId);if(!m)return;if(m.type==='smoothie'){selSmoothie=m.id;checks={};save();renderSmoothie();renderGroc();closeModal();return;}var slot=m.type;var day=null;for(var i=0;i<DAYS.length;i++){if(!plan[DAYS[i]][slot]){day=DAYS[i];break;}}if(!day){alert('All '+slot+' slots full!');return;}plan[day][slot]=modalId;checks={};save();renderPlan();renderGroc();closeModal();}
 
-// ── Sauces ──
-function showSauces(){$('sauce-list').innerHTML=SAUCES.map(function(s){return '<div class="sauce-card"><h4>'+s.name+'</h4><div class="si"><strong>Ingredients:</strong> '+s.ing+'</div><div class="sh"><strong>How:</strong> '+s.how+'</div></div>';}).join('');$('sauce-modal').classList.add('show');}
-
 // ── Smart Fill ──
 function showSF(){$('sf-opts').innerHTML=CUISINES.map(function(c){var ico=c.icon==='cyn'?'<span style="display:inline-flex;align-items:center;vertical-align:middle;margin-right:.25rem">'+cynSvg(14,14)+'</span>':'';return '<button class="sf-btn" data-cu="'+c.val+'">'+ico+c.label+'</button>';}).join('');$('sf-opts').querySelectorAll('.sf-btn').forEach(function(b){b.addEventListener('click',function(){doSF(this.dataset.cu);$('sf-modal').classList.remove('show');});});$('sf-modal').classList.add('show');}
 var ASIAN_TAGS=['asian','japanese','korean','thai'];
@@ -576,23 +536,43 @@ function renderSmoothie(){
 
 // ── Planner (vertical day rows) ──
 function renderPlan(){
-  var grid=$('pgrid');var today=new Date().getDay();var dm=[6,0,1,2,3,4,5];var ti=dm[today];
+  var grid=$('pgrid');var ti=new Date().getDay();
   grid.innerHTML=DAYS.map(function(day,i){
     var lm=plan[day].lunch?findMeal(plan[day].lunch):null;
     var dm2=plan[day].dinner?findMeal(plan[day].dinner):null;
     var tapL=selId!==null&&selSlot==='lunch'&&!lm;
     var tapD=selId!==null&&selSlot==='dinner'&&!dm2;
     return '<div class="day-row"><div class="day-label '+(i===ti?'tdy':'')+'">'+day+'</div>'+
-      '<div class="slot '+(tapL?'tt':'')+'" data-day="'+day+'" data-slot="lunch"><div class="slot-lbl">\ud83e\udd57 Lunch</div>'+(lm?'<div class="slot-meal lunch" data-r="'+lm.id+'">'+lm.name+'<button class="rm" data-rm="'+day+'-lunch">\u00d7</button></div>':'<div class="slot-empty">'+(tapL?'\u2190 tap':'\u2014')+'</div>')+'</div>'+
-      '<div class="slot '+(tapD?'tt':'')+'" data-day="'+day+'" data-slot="dinner"><div class="slot-lbl">\ud83c\udf72 Dinner</div>'+(dm2?'<div class="slot-meal dinner" data-r="'+dm2.id+'">'+dm2.name+'<button class="rm" data-rm="'+day+'-dinner">\u00d7</button></div>':'<div class="slot-empty">'+(tapD?'\u2190 tap':'\u2014')+'</div>')+'</div></div>';
+      '<div class="slot '+(tapL?'tt':'')+'" data-day="'+day+'" data-slot="lunch"><div class="slot-lbl">\ud83e\udd57 Lunch</div>'+(lm?'<div class="slot-meal lunch" draggable="true" data-r="'+lm.id+'" data-src-day="'+day+'" data-src-slot="lunch">'+lm.name+'<button class="rm" data-rm="'+day+'-lunch">\u00d7</button></div>':'<div class="slot-empty">'+(tapL?'\u2190 tap':'\u2014')+'</div>')+'</div>'+
+      '<div class="slot '+(tapD?'tt':'')+'" data-day="'+day+'" data-slot="dinner"><div class="slot-lbl">\ud83c\udf72 Dinner</div>'+(dm2?'<div class="slot-meal dinner" draggable="true" data-r="'+dm2.id+'" data-src-day="'+day+'" data-src-slot="dinner">'+dm2.name+'<button class="rm" data-rm="'+day+'-dinner">\u00d7</button></div>':'<div class="slot-empty">'+(tapD?'\u2190 tap':'\u2014')+'</div>')+'</div></div>';
   }).join('');
+  grid.querySelectorAll('.slot-meal').forEach(function(sm){
+    sm.addEventListener('dragstart',function(e){
+      window._dragSrc={day:this.dataset.srcDay,slot:this.dataset.srcSlot,id:parseInt(this.dataset.r)};
+      this.style.opacity='.4';
+    });
+    sm.addEventListener('dragend',function(){this.style.opacity='';});
+    sm.addEventListener('click',function(e){if(!e.target.classList.contains('rm'))showR(parseInt(this.dataset.r));});
+  });
   grid.querySelectorAll('.slot').forEach(function(s){
     s.addEventListener('click',function(e){if(e.target.classList.contains('rm')||e.target.classList.contains('slot-meal'))return;tapSlot(this.dataset.day,this.dataset.slot);});
     s.addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag-over');});
     s.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
-    s.addEventListener('drop',function(e){e.preventDefault();this.classList.remove('drag-over');var id=window._did;if(!id)return;var m=findMeal(id);if(!m||m.type!==this.dataset.slot)return;plan[this.dataset.day][this.dataset.slot]=id;checks={};save();renderPlan();renderGroc();});
+    s.addEventListener('drop',function(e){
+      e.preventDefault();this.classList.remove('drag-over');
+      var tDay=this.dataset.day,tSlot=this.dataset.slot;
+      if(window._dragSrc){
+        var src=window._dragSrc;window._dragSrc=null;
+        if(src.slot!==tSlot)return;
+        var tmp=plan[tDay][tSlot];
+        plan[tDay][tSlot]=src.id;
+        plan[src.day][src.slot]=tmp;
+        checks={};save();renderPlan();renderGroc();return;
+      }
+      var id=window._did;if(!id)return;var m=findMeal(id);if(!m||m.type!==tSlot)return;
+      plan[tDay][tSlot]=id;checks={};save();renderPlan();renderGroc();
+    });
   });
-  grid.querySelectorAll('.slot-meal').forEach(function(sm){sm.addEventListener('click',function(e){if(!e.target.classList.contains('rm'))showR(parseInt(this.dataset.r));});});
   grid.querySelectorAll('.rm').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();var p=this.dataset.rm.split('-');plan[p[0]][p[1]]=null;checks={};save();renderPlan();renderGroc();});});
 }
 
@@ -628,122 +608,6 @@ function renderGroc(){
 function renderMobile(){
   $('mobile-tabs').innerHTML='<button class="mtb on" data-p="lib">\ud83c\udf7d Meals</button><button class="mtb" data-p="plan">\ud83d\udcc5 Plan</button><button class="mtb" data-p="groc">\ud83d\uded2 List</button>';
   $('mobile-tabs').querySelectorAll('.mtb').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('ap');});$('p-'+this.dataset.p).classList.add('ap');$('mobile-tabs').querySelectorAll('.mtb').forEach(function(t){t.classList.remove('on');});this.classList.add('on');});});
-}
-
-// ── Add Recipe ──
-function parseIngredients(text){
-  return text.split('\n').map(function(l){return l.trim();}).filter(Boolean).map(function(line){
-    var m=line.match(/^(\d+(?:\.\d+)?)\s+([a-zA-Z]+)\s+(.+)$/);
-    if(m)return{n:m[3].trim(),a:parseFloat(m[1]),u:m[2].toLowerCase(),c:'pantry'};
-    var m2=line.match(/^(\d+(?:\.\d+)?)\s+(.+)$/);
-    if(m2)return{n:m2[2].trim(),a:parseFloat(m2[1]),u:'',c:'pantry'};
-    return{n:line,a:1,u:'',c:'pantry'};
-  });
-}
-function parseDuration(d){if(!d)return 0;var m=d.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);if(!m)return 0;return(parseInt(m[1]||0)*60)+parseInt(m[2]||0);}
-function fetchRecipe(){
-  var url=$('ar-url').value.trim();
-  if(!url){alert('Paste a recipe URL first.');return;}
-  var btn=$('btn-ar-fetch');
-  btn.textContent='Loading…';btn.disabled=true;
-  var proxy='https://api.allorigins.win/get?url='+encodeURIComponent(url);
-  fetch(proxy).then(function(r){return r.json();}).then(function(data){
-    var doc=new DOMParser().parseFromString(data.contents,'text/html');
-    var recipe=null;
-    doc.querySelectorAll('script[type="application/ld+json"]').forEach(function(s){
-      if(recipe)return;
-      try{
-        var j=JSON.parse(s.textContent);
-        var items=j['@graph']?j['@graph']:[j];
-        items.forEach(function(it){
-          if(recipe)return;
-          var t=it['@type'];
-          if(t==='Recipe'||(Array.isArray(t)&&t.includes('Recipe')))recipe=it;
-        });
-      }catch(e){}
-    });
-    if(!recipe){alert('No structured recipe data found on this page. Try filling in the fields manually.');btn.textContent='Generate from URL';btn.disabled=false;return;}
-    if(recipe.name)$('ar-name').value=recipe.name;
-    if(recipe.description)$('ar-desc').value=recipe.description.replace(/<[^>]+>/g,'').slice(0,120);
-    var total=parseDuration(recipe.totalTime)||(parseDuration(recipe.prepTime)+parseDuration(recipe.cookTime));
-    if(total)$('ar-time').value=total;
-    if(recipe.nutrition){
-      if(recipe.nutrition.calories){var c=String(recipe.nutrition.calories).replace(/[^\d]/g,'');if(c)$('ar-cal').value=c;}
-      if(recipe.nutrition.proteinContent){var p=String(recipe.nutrition.proteinContent).replace(/[^\d]/g,'');if(p)$('ar-pro').value=p;}
-    }
-    if(recipe.recipeIngredient&&recipe.recipeIngredient.length)$('ar-ing').value=recipe.recipeIngredient.join('\n');
-    if(recipe.recipeInstructions&&recipe.recipeInstructions.length){
-      var steps=recipe.recipeInstructions.map(function(s){
-        if(typeof s==='string')return s.replace(/<[^>]+>/g,'').trim();
-        if(s['@type']==='HowToSection'&&s.itemListElement)return s.itemListElement.map(function(sub){return(sub.text||'').replace(/<[^>]+>/g,'').trim();}).join(' ');
-        return(s.text||s.name||'').replace(/<[^>]+>/g,'').trim();
-      }).filter(Boolean);
-      $('ar-steps').value=steps.join('\n');
-    }
-    var nameDesc=((recipe.name||'')+' '+(recipe.description||'')+' '+($('ar-ing').value||'')).toLowerCase();
-    if(/smoothie|shake|blend/.test(nameDesc))$('ar-type').value='smoothie';
-    else if(/salad|sandwich|wrap|soup|bowl/.test(nameDesc))$('ar-type').value='lunch';
-    else $('ar-type').value='dinner';
-    btn.textContent='Generate from URL';btn.disabled=false;
-  }).catch(function(){alert('Could not fetch the URL. Check the link and try again.');btn.textContent='Generate from URL';btn.disabled=false;});
-}
-function showAddRecipe(){
-  $('ar-name').value='';$('ar-desc').value='';
-  $('ar-ing').value='';$('ar-steps').value='';
-  $('ar-time').value=15;$('ar-cal').value=400;$('ar-pro').value=20;
-  $('add-recipe-modal').classList.add('show');
-}
-function saveCustomRecipe(){
-  var name=$('ar-name').value.trim();
-  if(!name){alert('Please enter a recipe name.');return;}
-  var type=$('ar-type').value;
-  var time=parseInt($('ar-time').value)||15;
-  var cal=parseInt($('ar-cal').value)||400;
-  var pro=parseInt($('ar-pro').value)||20;
-  var desc=$('ar-desc').value.trim();
-  var ing=parseIngredients($('ar-ing').value);
-  var steps=$('ar-steps').value.split('\n').map(function(l){return l.trim();}).filter(Boolean);
-  var maxId=0;ALL.forEach(function(m){if(m.id>maxId)maxId=m.id;});
-  var recipe={id:maxId+1,name:name,desc:desc||ing.map(function(i){return i.n;}).slice(0,4).join(', '),
-    time:time,cal:cal,pro:pro,type:type,ip:false,tags:[type],ing:ing,steps:steps};
-  ALL.push(recipe);
-  if(type==='smoothie')SMOOTHIES.push(recipe);
-  else if(type==='lunch')LUNCHES.push(recipe);
-  else DINNERS.push(recipe);
-  try{var cr=JSON.parse(localStorage.getItem('mp6custom')||'[]');cr.push(recipe);localStorage.setItem('mp6custom',JSON.stringify(cr));}catch(e){}
-  $('add-recipe-modal').classList.remove('show');
-  curTab=type;renderTabs();renderF();renderLib();
-  if(type==='smoothie')renderSmoothie();
-}
-
-// ── Paste Plan ──
-function pastePlan(){
-  var text=$('pp-text').value.trim();
-  if(!text){alert('Paste a plan first.');return;}
-  var lines=text.split('\n');
-  var curDay=null;
-  var matched=0;
-  var notFound=[];
-  // helper: find meal by name (case-insensitive)
-  function findByName(name){name=name.trim().toLowerCase();for(var i=0;i<ALL.length;i++){if(ALL[i].name.toLowerCase()===name)return ALL[i];}return null;}
-  lines.forEach(function(line){
-    line=line.trim();
-    // Daily Smoothie
-    var smMatch=line.match(/^Daily Smoothie:\s*(.+)$/i);
-    if(smMatch){var sm=findByName(smMatch[1]);if(sm){selSmoothie=sm.id;}return;}
-    // Day header (MON, TUE, etc.)
-    if(/^(MON|TUE|WED|THU|FRI|SAT|SUN)$/i.test(line)){curDay=DAYS.filter(function(d){return d.toUpperCase()===line.toUpperCase();})[0]||null;return;}
-    // Lunch / Dinner line
-    var lMatch=line.match(/^Lunch:\s*(.+)$/i);
-    var dMatch=line.match(/^Dinner:\s*(.+)$/i);
-    if(curDay&&lMatch){var m=findByName(lMatch[1]);if(m){plan[curDay].lunch=m.id;matched++;}else{notFound.push(lMatch[1]);}return;}
-    if(curDay&&dMatch){var m=findByName(dMatch[1]);if(m){plan[curDay].dinner=m.id;matched++;}else{notFound.push(dMatch[1]);}return;}
-  });
-  if(matched===0&&notFound.length===0){alert('No meals found in the pasted text. Make sure it was copied using the Copy Plan button.');return;}
-  checks={};save();renderSmoothie();renderPlan();renderGroc();
-  $('paste-plan-modal').classList.remove('show');
-  $('pp-text').value='';
-  if(notFound.length){alert('Loaded '+matched+' meal(s). Could not find: '+notFound.join(', '));}
 }
 
 // ── Copy Plan ──
@@ -784,24 +648,13 @@ $('btn-print').addEventListener('click',function(){
 });
 
 $('btn-sf').addEventListener('click',function(){showSF();});
-$('btn-add-recipe').addEventListener('click',function(){showAddRecipe();});
-$('btn-ar-close').addEventListener('click',function(){$('add-recipe-modal').classList.remove('show');});
-$('btn-ar-save').addEventListener('click',function(){saveCustomRecipe();});
-$('btn-paste-plan').addEventListener('click',function(){$('pp-text').value='';$('paste-plan-modal').classList.add('show');});
-$('btn-pp-close').addEventListener('click',function(){$('paste-plan-modal').classList.remove('show');});
-$('paste-plan-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
-$('btn-pp-load').addEventListener('click',function(){pastePlan();});
-$('add-recipe-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
 $('btn-copy-plan').addEventListener('click',function(){copyPlan();});
-$('btn-sauce').addEventListener('click',function(){showSauces();});
 $('btn-recipe-close').addEventListener('click',function(){closeModal();});
 $('btn-r-fav').addEventListener('click',function(){if(!modalId)return;if(favorites[modalId])delete favorites[modalId];else favorites[modalId]=true;saveFavs();this.className='mfav'+(favorites[modalId]?' faved':'');renderLib();});
-$('btn-sauce-close').addEventListener('click',function(){$('sauce-modal').classList.remove('show');});
 $('btn-sf-close').addEventListener('click',function(){$('sf-modal').classList.remove('show');});
 $('btn-cancel-sel').addEventListener('click',function(){cancelSel();});
 $('btn-r-add').addEventListener('click',function(){addFromModal();});
 $('recipe-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-$('sauce-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
 $('sf-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
 $('search').addEventListener('input',function(){renderLib();});
 
