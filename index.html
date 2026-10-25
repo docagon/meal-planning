@@ -433,7 +433,7 @@ function findMeal(id){for(var i=0;i<ALL.length;i++){if(ALL[i].id===id)return ALL
 
 // ── Tabs ──
 function renderTabs(){
-  $('tabs-container').innerHTML='<button class="tab '+(curTab==='smoothie'?'on':'')+'" data-t="smoothie">\ud83e\udd64 Smoothies</button><button class="tab '+(curTab==='lunch'?'on':'')+'" data-t="lunch">\ud83e\udd57 Lunches</button><button class="tab '+(curTab==='dinner'?'on':'')+'" data-t="dinner">\ud83c\udf72 Dinners</button>';
+  $('tabs-container').innerHTML='<button class="tab '+(curTab==='smoothie'?'on':'')+'" data-t="smoothie">\ud83e\udd64 Smoothies</button><button class="tab '+(curTab==='lunch'?'on':'')+'" data-t="lunch">\ud83e\udd57 Salads</button><button class="tab '+(curTab==='dinner'?'on':'')+'" data-t="dinner">\ud83c\udf72 Big Meals</button>';
   $('tabs-container').querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){curTab=this.dataset.t;activeF='all';ipFilter='all';renderTabs();renderF();renderLib();});});
 }
 function renderF(){
@@ -473,7 +473,7 @@ function doSF(cuisine){
 }
 
 // ── Select/Tap ──
-function selMeal(id){if(selId===id){cancelSel();return;}selId=id;var m=findMeal(id);if(!m)return;if(m.type==='smoothie'){selSmoothie=id;checks={};save();renderSmoothie();renderGroc();return;}selSlot=m.type;$('stxt').textContent='"'+m.name+'" \u2014 tap a '+selSlot+' slot';$('sb2').classList.add('show');renderLib();renderPlan();if(window.innerWidth<=900){document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('ap');});$('p-plan').classList.add('ap');document.querySelectorAll('.mtb').forEach(function(t){t.classList.remove('on');});document.querySelectorAll('.mtb')[1].classList.add('on');}}
+function selMeal(id){if(selId===id){cancelSel();return;}selId=id;var m=findMeal(id);if(!m)return;if(m.type==='smoothie'){selSmoothie=id;checks={};save();renderSmoothie();renderGroc();return;}selSlot=m.type;$('stxt').textContent='"'+m.name+'" \u2014 tap a '+(selSlot==='lunch'?'salad':'big meal')+' slot';$('sb2').classList.add('show');renderLib();renderPlan();if(window.innerWidth<=900){document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('ap');});$('p-plan').classList.add('ap');document.querySelectorAll('.mtb').forEach(function(t){t.classList.remove('on');});document.querySelectorAll('.mtb')[1].classList.add('on');}}
 function cancelSel(){selId=null;selSlot=null;$('sb2').classList.remove('show');renderLib();renderPlan();}
 function tapSlot(day,slot){if(selId!==null&&selSlot===slot){plan[day][slot]=selId;cancelSel();checks={};save();renderPlan();renderGroc();}}
 
@@ -495,8 +495,8 @@ function renderPlan(){
     var tapL=selId!==null&&selSlot==='lunch'&&!lm;
     var tapD=selId!==null&&selSlot==='dinner'&&!dm2;
     return '<div class="day-row"><div class="day-label '+(i===ti?'tdy':'')+'">'+day+'</div>'+
-      '<div class="slot '+(tapL?'tt':'')+'" data-day="'+day+'" data-slot="lunch"><div class="slot-lbl">\ud83e\udd57 Lunch</div>'+(lm?'<div class="slot-meal lunch" draggable="true" data-r="'+lm.id+'" data-src-day="'+day+'" data-src-slot="lunch">'+lm.name+'<button class="rm" data-rm="'+day+'-lunch">\u00d7</button></div>':'<div class="slot-empty">'+(tapL?'\u2190 tap':'\u2014')+'</div>')+'</div>'+
-      '<div class="slot '+(tapD?'tt':'')+'" data-day="'+day+'" data-slot="dinner"><div class="slot-lbl">\ud83c\udf72 Dinner</div>'+(dm2?'<div class="slot-meal dinner" draggable="true" data-r="'+dm2.id+'" data-src-day="'+day+'" data-src-slot="dinner">'+dm2.name+'<button class="rm" data-rm="'+day+'-dinner">\u00d7</button></div>':'<div class="slot-empty">'+(tapD?'\u2190 tap':'\u2014')+'</div>')+'</div></div>';
+      '<div class="slot '+(tapL?'tt':'')+'" data-day="'+day+'" data-slot="lunch"><div class="slot-lbl">\ud83e\udd57 Salad</div>'+(lm?'<div class="slot-meal lunch" draggable="true" data-r="'+lm.id+'" data-src-day="'+day+'" data-src-slot="lunch">'+lm.name+'<button class="rm" data-rm="'+day+'-lunch">\u00d7</button></div>':'<div class="slot-empty">'+(tapL?'\u2190 tap':'\u2014')+'</div>')+'</div>'+
+      '<div class="slot '+(tapD?'tt':'')+'" data-day="'+day+'" data-slot="dinner"><div class="slot-lbl">\ud83c\udf72 Big Meal</div>'+(dm2?'<div class="slot-meal dinner" draggable="true" data-r="'+dm2.id+'" data-src-day="'+day+'" data-src-slot="dinner">'+dm2.name+'<button class="rm" data-rm="'+day+'-dinner">\u00d7</button></div>':'<div class="slot-empty">'+(tapD?'\u2190 tap':'\u2014')+'</div>')+'</div></div>';
   }).join('');
   grid.querySelectorAll('.slot-meal').forEach(function(sm){
     sm.addEventListener('dragstart',function(e){
@@ -574,8 +574,8 @@ function copyPlan(){
     var dm=plan[day].dinner?findMeal(plan[day].dinner):null;
     if(!lm&&!dm)return;
     lines.push(day);
-    if(lm)lines.push('  Lunch:  '+lm.name);
-    if(dm)lines.push('  Dinner: '+dm.name);
+    if(lm)lines.push('  Salad:    '+lm.name);
+    if(dm)lines.push('  Big Meal: '+dm.name);
   });
   if(lines.length<=3){lines.push('(No meals planned yet)');}
   var text=lines.join('\n');
