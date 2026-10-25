@@ -144,19 +144,6 @@ header h1 span{opacity:.6;font-weight:300}
 .pnl::-webkit-scrollbar-thumb,.mdl::-webkit-scrollbar-thumb{background:var(--bd);border-radius:99px}
 @media print{.lib,.plan,header,.mt,.sb2,.mo{display:none!important}.groc{display:block!important;border:none;padding:1.5rem}.app{display:block;height:auto}.gi.ck{display:none}}
 </style>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
-// ── Firebase config — paste your values from Firebase Console → Project Settings ──
-var FB_CFG={
-  apiKey:      "AIzaSyDmpElisa-ClRQX2_ykth7-GB0vPtiLO2o",
-  authDomain:  "meal-planner-e8205.firebaseapp.com",
-  projectId:   "meal-planner-e8205"
-};
-var FB_ON=FB_CFG.apiKey!=="PASTE_API_KEY";
-if(FB_ON){try{firebase.initializeApp(FB_CFG);}catch(e){FB_ON=false;console.error('Firebase init error',e);}}
-</script>
 </head>
 <body>
 <header>
@@ -166,7 +153,6 @@ if(FB_ON){try{firebase.initializeApp(FB_CFG);}catch(e){FB_ON=false;console.error
     <button class="hbtn" id="btn-copy-plan">Copy Plan</button>
     <button class="hbtn" id="btn-print">Print</button>
     <button class="hbtn dng" id="btn-clear">Clear</button>
-    <span id="fb-user"></span>
   </div>
 </header>
 <div class="app">
@@ -424,56 +410,22 @@ try{var _cr=JSON.parse(localStorage.getItem('mp6custom')||'[]');_cr.forEach(func
 try{var _fv=localStorage.getItem('mp6fav');if(_fv)favorites=JSON.parse(_fv);}catch(e){}
 try{var _nt=localStorage.getItem('mp6notes');if(_nt)notes=JSON.parse(_nt);}catch(e){}
 
-var fbUser=null;
-var fbDb=FB_ON?firebase.firestore():null;
-var fbAuth=FB_ON?firebase.auth():null;
-
-function saveToCloud(){
-  if(!fbUser||!fbDb)return;
-  fbDb.collection('users').doc(fbUser.uid).set({favorites:favorites,plan:plan,selSmoothie:selSmoothie,addProtein:addProtein,notes:notes},{merge:true}).catch(function(e){console.warn('Cloud sync error',e);});
+function syncToServer(){
+  var payload={favorites:favorites,plan:plan,selSmoothie:selSmoothie,addProtein:addProtein,notes:notes,checks:checks};
+  try{fetch('/api/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(function(){});}catch(e){}
 }
 function saveFavs(){
   try{localStorage.setItem('mp6fav',JSON.stringify(favorites));}catch(e){}
-  saveToCloud();
+  syncToServer();
 }
 function saveNotes(){
   try{localStorage.setItem('mp6notes',JSON.stringify(notes));}catch(e){}
-  saveToCloud();
-}
-function renderAuthBtn(){
-  var el=$('fb-user');if(!el)return;
-  if(!FB_ON){el.innerHTML='';return;}
-  if(fbUser){
-    el.innerHTML='<button class="hbtn" id="btn-signout">Log out</button>';
-    $('btn-signout').addEventListener('click',function(){fbAuth.signOut();});
-  } else {
-    el.innerHTML='<button class="hbtn" id="btn-signin">Log in</button>';
-    $('btn-signin').addEventListener('click',function(){fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){alert('Sign-in failed: '+e.message);});});
-  }
-}
-if(FB_ON&&fbAuth){
-  fbAuth.onAuthStateChanged(function(user){
-    fbUser=user;
-    if(user&&fbDb){
-      fbDb.collection('users').doc(user.uid).get().then(function(doc){
-        if(doc.exists){
-          var d=doc.data();
-          if(d.favorites){favorites=d.favorites;try{localStorage.setItem('mp6fav',JSON.stringify(favorites));}catch(e){}}
-          if(d.plan){plan=d.plan;try{localStorage.setItem('mp6p',JSON.stringify(plan));}catch(e){}}
-          if(d.selSmoothie!==undefined){selSmoothie=d.selSmoothie;try{localStorage.setItem('mp6sm',JSON.stringify(selSmoothie));}catch(e){}}
-          if(d.addProtein!==undefined){addProtein=d.addProtein;try{localStorage.setItem('mp6ap',JSON.stringify(addProtein));}catch(e){}}
-          if(d.notes){notes=d.notes;try{localStorage.setItem('mp6notes',JSON.stringify(notes));}catch(e){}}
-          renderLib();renderPlan();renderSmoothie();renderGroc();
-        }
-      }).catch(function(e){console.warn('Load cloud data error',e);});
-    }
-    renderAuthBtn();
-  });
+  syncToServer();
 }
 function save(){
   try{localStorage.setItem('mp6p',JSON.stringify(plan));localStorage.setItem('mp6c',JSON.stringify(checks));
   localStorage.setItem('mp6sm',JSON.stringify(selSmoothie));localStorage.setItem('mp6ap',JSON.stringify(addProtein));}catch(e){}
-  saveToCloud();
+  syncToServer();
 }
 function fA(a,u){var n=(a===Math.floor(a))?Math.floor(a):Math.round(a*10)/10;if(!u||u==='')return ''+n;if(u==='can'||u==='cans')return n<=1?'1 can':n+' cans';if(u==='pack'||u==='packs')return n<=1?'1 pack':n+' packs';if(u==='cloves'||u==='clove')return n+' cloves';if(u==='stalks')return n+' stalks';if(u==='head')return n<=1?'1 head':n+' heads';return n+' '+u;}
 function $(id){return document.getElementById(id);}
@@ -659,7 +611,16 @@ $('sf-modal').addEventListener('click',function(e){if(e.target===this)this.class
 $('search').addEventListener('input',function(){renderLib();});
 
 // ── Init ──
-renderTabs();renderF();renderLib();renderSmoothie();renderPlan();renderShopToggle();renderGroc();renderMobile();renderAuthBtn();
+renderTabs();renderF();renderLib();renderSmoothie();renderPlan();renderShopToggle();renderGroc();renderMobile();
+try{fetch('/api/data').then(function(r){return r.json();}).then(function(d){
+  if(d.favorites){favorites=d.favorites;try{localStorage.setItem('mp6fav',JSON.stringify(favorites));}catch(e){}}
+  if(d.plan){plan=d.plan;try{localStorage.setItem('mp6p',JSON.stringify(plan));}catch(e){}}
+  if(d.selSmoothie!==undefined){selSmoothie=d.selSmoothie;try{localStorage.setItem('mp6sm',JSON.stringify(selSmoothie));}catch(e){}}
+  if(d.addProtein!==undefined){addProtein=d.addProtein;try{localStorage.setItem('mp6ap',JSON.stringify(addProtein));}catch(e){}}
+  if(d.notes){notes=d.notes;try{localStorage.setItem('mp6notes',JSON.stringify(notes));}catch(e){}}
+  if(d.checks){checks=d.checks;try{localStorage.setItem('mp6c',JSON.stringify(checks));}catch(e){}}
+  renderLib();renderPlan();renderSmoothie();renderGroc();
+}).catch(function(){});}catch(e){}
 
 })();
 </script>
